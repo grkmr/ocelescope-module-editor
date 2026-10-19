@@ -7,7 +7,11 @@ requires-python = ">=3.11"
 dependencies = [
   "ocelescope-backend>=0.10.1",
   "ocelescope-module-ocel>=0.10.1",
+  "ocelescope-module-ocel-editor",
 ]
 
 [tool.uv.workspace]
 members = ["backend-modules/*"]
+
+[tool.uv.sources]
+ocelescope-module-ocel-editor = { workspace = true }

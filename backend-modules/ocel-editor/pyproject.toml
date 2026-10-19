@@ -1,0 +1,20 @@
+[project]
+name = "ocelescope-module-ocel-editor"
+version = "0.1.0"
+readme = "README.md"
+description = "A module for creating new OCELs from OCELs"
+authors = [{ name = "Görkem-Emre Öztürk" }]
+requires-python = ">=3.11"
+dependencies = [
+  "ocelescope-backend>=0.10.1",
+]
+
+[project.entry-points."ocelescope_backend.modules"]
+ocelEditor = "ocelescope_module_ocel_editor.module:OcelEditor"
+
+[build-system]
+requires = ["uv_build>=0.9.26,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+package = true

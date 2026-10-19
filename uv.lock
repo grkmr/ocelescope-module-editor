@@ -16,6 +16,12 @@ resolution-markers = [
     "python_full_version < '3.12' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
+[manifest]
+members = [
+    "ocelescope-instance",
+    "ocelescope-module-ocel-editor",
+]
+
 [[package]]
 name = "annotated-doc"
 version = "0.0.4"
@@ -1295,12 +1301,14 @@ source = { virtual = "." }
 dependencies = [
     { name = "ocelescope-backend" },
     { name = "ocelescope-module-ocel" },
+    { name = "ocelescope-module-ocel-editor" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "ocelescope-backend", specifier = ">=0.10.1" },
     { name = "ocelescope-module-ocel", specifier = ">=0.10.1" },
+    { name = "ocelescope-module-ocel-editor", editable = "backend-modules/ocel-editor" },
 ]
 
 [[package]]
@@ -1320,6 +1328,17 @@ sdist = { url = "https://files.pythonhosted.org/packages/a0/9e/5085a1e57e912d95a
 wheels = [
     { url = "https://files.pythonhosted.org/packages/cf/a7/00ffcb7880d822b405feefa91b74fe2beb6ccc0545127dbd2dc9bc861f06/ocelescope_module_ocel-0.10.1-py3-none-any.whl", hash = "sha256:469e5bee932a7377923a0e4304eb2e217fde8da21995a0e919b4a7d71aaa11bc", size = 26059, upload-time = "2026-10-01T12:30:47.379Z" },
 ]
+
+[[package]]
+name = "ocelescope-module-ocel-editor"
+version = "0.1.0"
+source = { editable = "backend-modules/ocel-editor" }
+dependencies = [
+    { name = "ocelescope-backend" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "ocelescope-backend", specifier = ">=0.10.1" }]
 
 [[package]]
 name = "orjson"

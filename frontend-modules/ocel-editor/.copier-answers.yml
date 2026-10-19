@@ -1,0 +1,8 @@
+# Changes here will be overwritten by Copier; do NOT edit manually
+_commit: 36a9b58
+_src_path: gh:promi4s/create-ocelescope-frontend-module
+api_module: ocelEditor
+author: Görkem-Emre Öztürk
+description: A module for creating new OCELs from OCELs
+module_label: Ocel Editor
+npm_package: '@ocelescope/ocel-editor'

@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@ocelescope/core": "catalog:",
 		"@ocelescope/management": "catalog:",
+		"@ocelescope/ocel-editor": "workspace:*",
 		"next": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:"
