@@ -11,6 +11,7 @@ export const useEditor = () => {
 		defaultValues: { name: "", pipeline: [] },
 	});
 	const fieldArray = useFieldArray({ control: form.control, name: "pipeline" });
+
 	const mutation = useEdit({
 		mutation: { onSuccess: () => form.reset() },
 	});

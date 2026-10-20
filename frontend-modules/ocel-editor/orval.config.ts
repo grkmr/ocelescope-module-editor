@@ -5,6 +5,15 @@ import { defineConfig } from "@ocelescope/api-config";
 // You only provide the output target.
 export default defineConfig({
   ocelEditor: {
-    output: { target: "./src/api/ocelEditor.ts" },
+    output: {
+      target: "./src/api/ocelEditor.ts",
+      override: {
+        operations: {
+          // POSTs so the pipeline can go in the body, but they only read
+          types: { query: { useQuery: true } },
+          attributes: { query: { useQuery: true } },
+        },
+      },
+    },
   },
 });

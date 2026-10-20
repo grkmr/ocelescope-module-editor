@@ -1,39 +1,36 @@
-import { Select, type SelectProps } from "@mantine/core";
-import { useEventCounts, useObjectCounts } from "@ocelescope/api-base";
+import { MultiSelect, type MultiSelectProps } from "@mantine/core";
 import { useCurrentOcel } from "@ocelescope/core";
+import { keepPreviousData } from "@tanstack/react-query";
+import { useTypes } from "../api/ocelEditor";
+import { useDebouncedSteps } from "../hooks/useDebouncedSteps";
+import type { EditAction } from "../types/edit";
 
-/** Object types or activities of the current OCEL. */
+/** Object types or activities of the current OCEL, any number of them. */
 export const TypeSelect = ({
 	entityType,
-	value,
-	onChange,
+	steps,
 	...props
-}: Omit<SelectProps, "data" | "value" | "onChange"> & {
+}: Omit<MultiSelectProps, "data"> & {
 	entityType: "object" | "event";
-	value: string;
-	onChange: (value: string) => void;
+	steps?: EditAction[];
 }) => {
 	const { id } = useCurrentOcel();
-	const isObject = entityType === "object";
-	const objects = useObjectCounts(id, undefined, {
-		query: { enabled: id != null && isObject },
-	});
-	const events = useEventCounts(id, undefined, {
-		query: { enabled: id != null && !isObject },
-	});
-	const { data, isPending } = isObject ? objects : events;
+	const { data, isPending } = useTypes(
+		id,
+		useDebouncedSteps(steps),
+		{ entity_type: entityType },
+		{ query: { enabled: id != null, placeholderData: keepPreviousData } },
+	);
 
 	return (
-		<Select
-			label={isObject ? "Object type" : "Activity"}
+		<MultiSelect
+			label={entityType === "object" ? "Object types" : "Activities"}
 			placeholder={isPending ? "Loading…" : "Search…"}
 			searchable
 			clearable
 			radius={0}
 			nothingFoundMessage="Nothing found"
 			data={Object.keys(data ?? {}).sort((a, b) => a.localeCompare(b))}
-			value={value || null}
-			onChange={(value) => onChange(value ?? "")}
 			{...props}
 		/>
 	);

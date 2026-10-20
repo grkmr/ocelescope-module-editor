@@ -7,7 +7,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { ArrowDown, ArrowUp, ChevronRight, Trash2 } from "lucide-react";
-import { type ComponentType, useEffect, useState } from "react";
+import { type ComponentType, type ReactNode, useEffect, useState } from "react";
 import type {
 	ActionDefinition,
 	ActionErrors,
@@ -15,12 +15,11 @@ import type {
 	EditActionType,
 	EditInputProps,
 } from "../../../types/edit";
-import { attributeRename } from "./AttributeRename";
-import { typeRename } from "./TypeRename";
+import { activityRename, objectTypeRename } from "./TypeRename";
 
 export const actions: { [T in EditActionType]: ActionDefinition<T> } = {
-	"rename-type": typeRename,
-	"rename-attribute": attributeRename,
+	"rename-object-type": objectTypeRename,
+	"rename-activity": activityRename,
 };
 
 export const actionTypes = Object.keys(actions) as EditActionType[];
@@ -28,7 +27,7 @@ export const actionTypes = Object.keys(actions) as EditActionType[];
 const definitionOf = (action: EditAction) =>
 	actions[action.type] as unknown as {
 		name: (action: EditAction) => string;
-		title: (action: EditAction) => string;
+		title: (action: EditAction) => ReactNode;
 		validate: (action: EditAction) => ActionErrors<EditActionType>;
 		Input: ComponentType<EditInputProps<EditActionType>>;
 	};
@@ -40,6 +39,7 @@ export const validateAction = (action: EditAction) =>
 export const EditorInput = ({
 	value,
 	onChange,
+	steps,
 	onMoveUp,
 	onMoveDown,
 	onRemove,
@@ -118,6 +118,7 @@ export const EditorInput = ({
 					<Input
 						value={value}
 						onChange={onChange}
+						steps={steps}
 						errors={invalid ? validate(value) : undefined}
 					/>
 				</Paper>

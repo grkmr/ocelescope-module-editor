@@ -1,7 +1,13 @@
-from fastapi import APIRouter
-from ocelescope_backend.app.dependencies import ApiOcel, ApiSession
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from ocelescope_module_ocel_editor.models import EditorAction, apply_actions
+from fastapi import APIRouter, Query
+from ocelescope import OCEL
+from ocelescope_backend.app.dependencies import ApiOcel, ApiSession
+from ocelescope_backend.app.internal.model.resource import ResourceApi
+
+from ocelescope_module_ocel_editor.models import EditorAction, EntityType, Pipeline
+from ocelescope_module_ocel_editor.resources import OcelMask
 
 router = APIRouter()
 
@@ -10,5 +16,45 @@ router = APIRouter()
 def edit(
     ocel: ApiOcel, session: ApiSession, actions: list[EditorAction], name: str
 ) -> str:
-    with apply_actions(ocel, actions) as edited:
-        return session.add_ocel(edited, name=name)
+    with (
+        Pipeline(ocel, actions, session) as pipeline,
+        TemporaryDirectory() as directory,
+    ):
+        path = Path(directory) / "edited.duckdb"
+        pipeline.write(path)
+        with OCEL.read_duckdb(path) as edited:
+            return session.add_ocel(edited, name=name)
+
+
+@router.post("/{ocel_id}/types", operation_id="types")
+def types(
+    ocel: ApiOcel,
+    session: ApiSession,
+    actions: list[EditorAction],
+    entity_type: EntityType,
+) -> dict[str, int]:
+    with Pipeline(ocel, actions, session) as pipeline:
+        return pipeline.types(entity_type)
+
+
+@router.post("/{ocel_id}/attributes", operation_id="attributes")
+def attributes(
+    ocel: ApiOcel,
+    session: ApiSession,
+    actions: list[EditorAction],
+    entity_type: EntityType,
+    types: list[str] = Query(default=[]),
+) -> list[str]:
+    with Pipeline(ocel, actions, session) as pipeline:
+        return pipeline.attributes(entity_type, types)
+
+
+@router.get("/masks", operation_id="masks")
+def masks(session: ApiSession) -> list[ResourceApi]:
+    """The session's OCEL masks."""
+    schema_hash = OcelMask.get_schema_hash()
+    return [
+        resource
+        for resource in session.list_resources()
+        if resource.schema_hash == schema_hash
+    ]

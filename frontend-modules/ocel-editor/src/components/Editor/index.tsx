@@ -1,6 +1,6 @@
 import { Alert, Button, Menu, Stack } from "@mantine/core";
 import { Plus } from "lucide-react";
-import { Controller } from "react-hook-form";
+import { Controller, useWatch } from "react-hook-form";
 import { useEditor } from "../../hooks/useEditor";
 import { EditorHeader } from "./EditorHeader";
 import { actions, actionTypes, EditorInput, validateAction } from "./inputs";
@@ -8,6 +8,10 @@ import { actions, actionTypes, EditorInput, validateAction } from "./inputs";
 const OcelEditor = () => {
 	const { form, fields, append, remove, move, ocelId, mutation, submit } =
 		useEditor();
+	const pipeline = useWatch({ control: form.control, name: "pipeline" });
+
+	const validSteps = (index: number) =>
+		pipeline.slice(0, index).filter((step) => validateAction(step) === true);
 
 	if (!ocelId) {
 		return <Alert color="yellow">Select an OCEL to edit.</Alert>;
@@ -41,6 +45,7 @@ const OcelEditor = () => {
 							<EditorInput
 								value={value}
 								onChange={onChange}
+								steps={validSteps(index)}
 								onMoveUp={index > 0 ? () => move(index, index - 1) : undefined}
 								onMoveDown={
 									index < fields.length - 1
