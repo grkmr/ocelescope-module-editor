@@ -68,7 +68,8 @@ export const EditorInput = ({
 			<Group gap="xs" wrap="nowrap" pr="md">
 				<UnstyledButton
 					p="md"
-					style={{ flex: 1 }}
+					flex={1}
+					miw={0}
 					onClick={() => setExpanded((expanded) => !expanded)}
 					aria-expanded={expanded}
 				>
@@ -76,12 +77,15 @@ export const EditorInput = ({
 						<ChevronRight
 							size={18}
 							style={{
+								flex: "none",
 								transform: expanded ? "rotate(90deg)" : undefined,
 								transition: "transform 150ms ease",
 							}}
 						/>
-						<Text fw={500}>{title(value)}</Text>
-						<Text c="dimmed" size="sm">
+						<Text fw={500} truncate miw={0}>
+							{title(value)}
+						</Text>
+						<Text c="dimmed" size="sm" style={{ flex: "none" }}>
 							{name(value)}
 						</Text>
 					</Group>

@@ -11,7 +11,13 @@
 // Set OCELESCOPE_BACKEND_TEMPLATE / OCELESCOPE_FRONTEND_TEMPLATE to use another
 // template (e.g. a local checkout).
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+	existsSync,
+	mkdtempSync,
+	readFileSync,
+	rmSync,
+	writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createInterface } from "node:readline/promises";
@@ -21,9 +27,11 @@ process.chdir(fileURLToPath(new URL("..", import.meta.url)));
 
 const TEMPLATES = {
 	backend:
-		process.env.OCELESCOPE_BACKEND_TEMPLATE ?? "gh:promi4s/create-ocelescope-backend-module",
+		process.env.OCELESCOPE_BACKEND_TEMPLATE ??
+		"gh:promi4s/create-ocelescope-backend-module",
 	frontend:
-		process.env.OCELESCOPE_FRONTEND_TEMPLATE ?? "gh:promi4s/create-ocelescope-frontend-module",
+		process.env.OCELESCOPE_FRONTEND_TEMPLATE ??
+		"gh:promi4s/create-ocelescope-frontend-module",
 };
 const APP_PACKAGE = "app/package.json";
 const APP_CONFIG = "app/ocelescope.config.ts";
@@ -39,9 +47,15 @@ const copier = (part, dir, extraArgs) =>
 	run("uvx", ["copier", "copy", ...extraArgs, TEMPLATES[part], dir]);
 
 const [kind, ...rest] = process.argv.slice(2);
-const parts = { module: ["backend", "frontend"], backend: ["backend"], frontend: ["frontend"] }[kind];
+const parts = {
+	module: ["backend", "frontend"],
+	backend: ["backend"],
+	frontend: ["frontend"],
+}[kind];
 if (!parts) {
-	console.error("Usage: add-module.mjs <module|backend|frontend> <folder> [copier args]");
+	console.error(
+		"Usage: add-module.mjs <module|backend|frontend> <folder> [copier args]",
+	);
 	process.exit(1);
 }
 
@@ -52,13 +66,17 @@ if (!folder) {
 	rl.close();
 }
 if (!/^[a-z0-9][a-z0-9-]*$/.test(folder)) {
-	console.error(`"${folder}" is not a valid folder name (lowercase letters, digits and dashes)`);
+	console.error(
+		`"${folder}" is not a valid folder name (lowercase letters, digits and dashes)`,
+	);
 	process.exit(1);
 }
 
 const backendDir = `backend-modules/${folder}`;
 const frontendDir = `frontend-modules/${folder}`;
-for (const dir of parts.map((part) => (part === "backend" ? backendDir : frontendDir))) {
+for (const dir of parts.map((part) =>
+	part === "backend" ? backendDir : frontendDir,
+)) {
 	if (existsSync(dir)) {
 		console.error(`${dir} already exists`);
 		process.exit(1);
@@ -70,7 +88,9 @@ const manualSteps = [];
 
 if (parts.includes("backend")) {
 	copier("backend", backendDir, rest);
-	const name = readFileSync(`${backendDir}/pyproject.toml`, "utf8").match(/^name = "(.+)"$/m)[1];
+	const name = readFileSync(`${backendDir}/pyproject.toml`, "utf8").match(
+		/^name = "(.+)"$/m,
+	)[1];
 	// Adds the member to the root pyproject.toml with `{ workspace = true }`.
 	run("uv", ["add", "--no-sync", name]);
 	added.push(`backend:  ${backendDir} (${name})`);
@@ -95,13 +115,15 @@ if (parts.includes("frontend")) {
 		if (tmp) rmSync(tmp, { recursive: true, force: true });
 	}
 
-	const name = JSON.parse(readFileSync(`${frontendDir}/package.json`, "utf8")).name;
+	const name = JSON.parse(
+		readFileSync(`${frontendDir}/package.json`, "utf8"),
+	).name;
 	added.push(`frontend: ${frontendDir} (${name})`);
 
 	const pkg = JSON.parse(readFileSync(APP_PACKAGE, "utf8"));
 	pkg.dependencies = Object.fromEntries(
-		Object.entries({ ...pkg.dependencies, [name]: "workspace:*" }).sort(([a], [b]) =>
-			a.localeCompare(b),
+		Object.entries({ ...pkg.dependencies, [name]: "workspace:*" }).sort(
+			([a], [b]) => a.localeCompare(b),
 		),
 	);
 	writeFileSync(APP_PACKAGE, `${JSON.stringify(pkg, null, "\t")}\n`);

@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Self
 
 from ocelescope.ocel.constants import (
     ACTIVITY_COL,
@@ -21,7 +21,7 @@ from ocelescope.ocel.constants.tables import (
     OBJECTS_TABLE,
 )
 from ocelescope.util.sql import ident, in_list, literal
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from ocelescope_module_ocel_editor.models.base import BaseResponse
 from ocelescope_module_ocel_editor.models.edit.base import (
@@ -74,13 +74,34 @@ class StaticTypeName(BaseResponse):
 class AttributeTypeName(BaseResponse):
     """Each entity is typed by its value of ``attribute``.
 
-    An entity without a value keeps its type, or is dropped with ``drop_missing``.
+    An entity without a value keeps its type, is dropped, or gets
+    ``fallback_name``, as ``missing`` says.
     An object's attribute can change over time; its latest value is the one used.
     """
 
     kind: Literal["attribute"]
     attribute: str
-    drop_missing: bool = False
+    missing: Literal["keep", "drop", "fallback"] = "keep"
+    fallback_name: str | None = None
+
+    @model_validator(mode="after")
+    def _fallback_has_name(self) -> Self:
+        if self.missing == "fallback" and not self.fallback_name:
+            raise ValueError("A fallback needs a name")
+        return self
+
+    def renamed(self, selected: str, value: str, current: str) -> str:
+        """SQL for the new type of a row, given its ``value`` of the attribute."""
+        fallback = (
+            literal(self.fallback_name)
+            if self.missing == "fallback" and self.fallback_name
+            else current
+        )
+        return f"""
+            CASE WHEN {selected} AND {value} IS NOT NULL THEN {value}
+            WHEN {selected} THEN {fallback}
+            ELSE {current} END
+        """
 
 
 NewTypeName = Annotated[StaticTypeName | AttributeTypeName, Field(discriminator="kind")]
@@ -124,13 +145,13 @@ class ObjectTypeRename(EditorActionBase):
         selected = selection_condition(
             step, self.selection, OBJECTS_TABLE, OID_COL, OTYPE_COL, alias="o."
         )
+        drop = new_name.missing == "drop"
 
         step.define(
             OBJECTS_TABLE,
             f"""
             SELECT o.* REPLACE (
-                CASE WHEN {selected} AND latest.value IS NOT NULL
-                THEN latest.value ELSE o.{otype} END AS {otype}
+                {new_name.renamed(selected, "latest.value", f"o.{otype}")} AS {otype}
             )
             FROM {step[OBJECTS_TABLE]} o
             LEFT JOIN (
@@ -141,11 +162,11 @@ class ObjectTypeRename(EditorActionBase):
                 WHERE {attribute} IS NOT NULL
                 GROUP BY {oid}
             ) latest USING ({oid})
-            {f"WHERE NOT ({selected} AND latest.value IS NULL)" if new_name.drop_missing else ""}
+            {f"WHERE NOT ({selected} AND latest.value IS NULL)" if drop else ""}
         """,
         )
 
-        if new_name.drop_missing:
+        if drop:
             self._drop_dangling(step)
 
     @staticmethod
@@ -186,21 +207,19 @@ class ActivityRename(EditorActionBase):
         selected = selection_condition(
             step, self.selection, EVENTS_TABLE, EID_COL, ACTIVITY_COL
         )
-        missing = f"{attribute} IS NULL"
+        value = f"CAST({attribute} AS VARCHAR)"
+        drop = new_name.missing == "drop"
 
         step.define(
             EVENTS_TABLE,
             f"""
-            SELECT * REPLACE (
-                CASE WHEN {selected} AND {attribute} IS NOT NULL
-                THEN CAST({attribute} AS VARCHAR) ELSE {activity} END AS {activity}
-            )
+            SELECT * REPLACE ({new_name.renamed(selected, value, activity)} AS {activity})
             FROM {step[EVENTS_TABLE]}
-            {f"WHERE NOT ({selected} AND {missing})" if new_name.drop_missing else ""}
+            {f"WHERE NOT ({selected} AND {attribute} IS NULL)" if drop else ""}
         """,
         )
 
-        if new_name.drop_missing:
+        if drop:
             self._drop_dangling(step)
 
     @staticmethod

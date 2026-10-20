@@ -1,7 +1,8 @@
-import { SegmentedControl, Stack, type StackProps } from "@mantine/core";
+import { Group, type GroupProps } from "@mantine/core";
 import type { MaskSelection, TypeSelection } from "../api/ocelEditor";
 import type { EditAction } from "../types/edit";
 import { MaskSelect } from "./MaskSelect";
+import { ModeMenu } from "./ModeMenu";
 import { TypeSelect } from "./TypeSelect";
 
 export type Selection = TypeSelection | MaskSelection;
@@ -13,7 +14,6 @@ export const selections: {
 	mask: { kind: "mask", maskId: "" },
 };
 
-/** Which objects or events to work on: by their type, or as a mask lists them. */
 export const SelectionInput = ({
 	entityType,
 	steps,
@@ -21,25 +21,18 @@ export const SelectionInput = ({
 	onChange,
 	error,
 	...props
-}: Omit<StackProps, "onChange"> & {
+}: Omit<GroupProps, "onChange"> & {
 	entityType: "object" | "event";
 	steps?: EditAction[];
 	value: Selection;
 	onChange: (value: Selection) => void;
 	error?: string;
 }) => (
-	<Stack gap={4} {...props}>
-		<SegmentedControl
-			size="xs"
-			value={value.kind}
-			onChange={(kind) => onChange(selections[kind as Selection["kind"]])}
-			data={[
-				{ label: "By type", value: "types" },
-				{ label: "By mask", value: "mask" },
-			]}
-		/>
+	<Group gap={4} align="flex-end" wrap="nowrap" {...props}>
 		{value.kind === "types" ? (
 			<TypeSelect
+				flex={1}
+				miw={0}
 				entityType={entityType}
 				steps={steps}
 				value={value.names}
@@ -48,11 +41,25 @@ export const SelectionInput = ({
 			/>
 		) : (
 			<MaskSelect
+				flex={1}
+				miw={0}
 				label={entityType === "object" ? "Objects of mask" : "Events of mask"}
 				value={value.maskId}
 				error={error}
 				onChange={(maskId) => onChange({ ...value, maskId })}
 			/>
 		)}
-	</Stack>
+		<ModeMenu
+			label="Select by"
+			value={value.kind}
+			onChange={(kind) => onChange(selections[kind])}
+			options={[
+				{
+					value: "types",
+					label: entityType === "object" ? "Object type" : "Activity",
+				},
+				{ value: "mask", label: "OCEL mask" },
+			]}
+		/>
+	</Group>
 );

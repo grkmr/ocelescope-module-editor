@@ -1,12 +1,6 @@
-import {
-	Box,
-	Checkbox,
-	Group,
-	SegmentedControl,
-	Stack,
-	TextInput,
-} from "@mantine/core";
+import { Box, Group, Radio, Stack, TextInput } from "@mantine/core";
 import { ArrowRight } from "lucide-react";
+import type { AttributeTypeNameMissing } from "../../../api/ocelEditor";
 import type {
 	ActionDefinition,
 	EditActionOf,
@@ -14,6 +8,7 @@ import type {
 } from "../../../types/edit";
 import { AttributeSelect } from "../../AttributeSelect";
 import { MaskName } from "../../MaskSelect";
+import { ModeMenu } from "../../ModeMenu";
 import { SelectionInput, selections } from "../../SelectionInput";
 
 type RenameType = "rename-object-type" | "rename-activity";
@@ -27,7 +22,7 @@ const entityTypes = {
 
 const newNames: { [K in NewName["kind"]]: Extract<NewName, { kind: K }> } = {
 	static: { kind: "static", name: "" },
-	attribute: { kind: "attribute", attribute: "", dropMissing: false },
+	attribute: { kind: "attribute", attribute: "", missing: "keep" },
 };
 
 const TypeRenameInput = ({
@@ -38,83 +33,116 @@ const TypeRenameInput = ({
 }: EditInputProps<RenameType>) => {
 	const { selection, newName } = value;
 	const entityType = entityTypes[value.type];
-	const entities = entityType === "object" ? "objects" : "events";
+	const entities = entityType === "object" ? "Objects" : "Events";
 
 	return (
 		<Stack gap="xs">
-			<Group justify="flex-end">
-				<SegmentedControl
-					value={newName.kind}
-					onChange={(kind) =>
-						onChange({
-							...value,
-							newName: newNames[kind as NewName["kind"]],
-						})
-					}
-					data={[
-						{ label: "Fixed name", value: "static" },
-						{ label: "From attribute", value: "attribute" },
-					]}
-				/>
-			</Group>
 			<Group align="flex-end" gap="sm" wrap="nowrap">
 				<SelectionInput
 					entityType={entityType}
 					steps={steps}
-					style={{ flex: 1 }}
 					value={selection}
 					error={errors?.selection}
-					onChange={(selection) =>
-						onChange({ ...value, selection } as RenameAction)
-					}
+					flex={1}
+					miw={0}
+					onChange={(selection) => onChange({ ...value, selection })}
 				/>
-				{/* Centred on the inputs rather than on their labels */}
 				<Box h={36} style={{ display: "flex", alignItems: "center" }}>
 					<ArrowRight size={18} />
 				</Box>
-				{newName.kind === "static" ? (
-					<TextInput
-						label="New name"
-						style={{ flex: 1 }}
-						value={newName.name}
-						error={errors?.newName}
-						onChange={(e) =>
-							onChange({
-								...value,
-								newName: { ...newName, name: e.currentTarget.value },
-							})
-						}
+				<Group flex={1} miw={0} gap={4} align="flex-end" wrap="nowrap">
+					{newName.kind === "static" ? (
+						<TextInput
+							flex={1}
+							miw={0}
+							radius={0}
+							label="New name"
+							value={newName.name}
+							error={errors?.newName}
+							onChange={(e) =>
+								onChange({
+									...value,
+									newName: { ...newName, name: e.currentTarget.value },
+								})
+							}
+						/>
+					) : (
+						<AttributeSelect
+							flex={1}
+							miw={0}
+							entityType={entityType}
+							types={selection.kind === "mask" ? [] : selection.names}
+							steps={steps}
+							value={newName.attribute}
+							error={!newName.attribute && errors?.newName}
+							onChange={(attribute) =>
+								onChange({ ...value, newName: { ...newName, attribute } })
+							}
+						/>
+					)}
+					<ModeMenu
+						label="Name by"
+						value={newName.kind}
+						onChange={(kind) => onChange({ ...value, newName: newNames[kind] })}
+						options={[
+							{ value: "static", label: "Fixed name" },
+							{ value: "attribute", label: "Attribute value" },
+						]}
 					/>
-				) : (
-					<AttributeSelect
-						entityType={entityType}
-						types={selection.kind === "mask" ? [] : selection.names}
-						steps={steps}
-						style={{ flex: 1 }}
-						value={newName.attribute}
-						error={errors?.newName}
-						onChange={(attribute) =>
-							onChange({ ...value, newName: { ...newName, attribute } })
-						}
-					/>
-				)}
+				</Group>
 			</Group>
 			{newName.kind === "attribute" && (
-				<Checkbox
-					label={`Drop ${entities} without a value`}
-					description={
-						newName.dropMissing
-							? "Their relations are dropped with them"
-							: `Otherwise those ${entities} keep their type`
-					}
-					checked={newName.dropMissing ?? false}
-					onChange={(e) =>
+				<Radio.Group
+					label={`${entities} without an attribute value`}
+					value={newName.missing ?? "keep"}
+					onChange={(missing) =>
 						onChange({
 							...value,
-							newName: { ...newName, dropMissing: e.currentTarget.checked },
+							newName: {
+								...newName,
+								missing: missing as AttributeTypeNameMissing,
+							},
 						})
 					}
-				/>
+				>
+					<Group mt="xs" gap="xl" align="flex-start" wrap="nowrap">
+						<Radio
+							value="keep"
+							label="Keep type"
+							description="They are not renamed"
+						/>
+						<Radio
+							value="drop"
+							label="Drop"
+							description="Along with their relations"
+						/>
+						<Radio
+							value="fallback"
+							flex={1}
+							miw={0}
+							styles={{ labelWrapper: { flex: 1 } }}
+							label={
+								<TextInput
+									size="xs"
+									radius={0}
+									placeholder="Fallback name"
+									value={newName.fallbackName ?? ""}
+									error={!!newName.attribute && !!errors?.newName}
+									onChange={(e) =>
+										onChange({
+											...value,
+											newName: {
+												...newName,
+												missing: "fallback",
+												fallbackName: e.currentTarget.value,
+											},
+										})
+									}
+								/>
+							}
+						/>
+					</Group>
+				</Radio.Group>
 			)}
 		</Stack>
 	);
@@ -137,7 +165,7 @@ const typeRename = <T extends RenameType>({
 		create: () =>
 			({
 				type,
-				selection: selections[entityTypes[type]].types,
+				selection: selections.types,
 				newName: newNames.static,
 			}) as RenameAction,
 		name: ({ selection }) =>
@@ -177,7 +205,12 @@ const typeRename = <T extends RenameType>({
 						selection.names[0] === newName.name && {
 							newName: "Must differ from the current name",
 						}
-				: !newName.attribute && { newName: "Pick an attribute" }),
+				: !newName.attribute
+					? { newName: "Pick an attribute" }
+					: newName.missing === "fallback" &&
+						!newName.fallbackName?.trim() && {
+							newName: "Enter a fallback name",
+						}),
 		}),
 		Input: TypeRenameInput,
 	};

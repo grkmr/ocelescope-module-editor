@@ -16,6 +16,14 @@
 		"dev:app": "pnpm --filter @instance/app dev",
 		"dev:modules": "pnpm -r --parallel --filter \"!@instance/app\" run dev",
 		"docker": "docker compose up --build",
-		"docker:down": "docker compose down"
+		"docker:down": "docker compose down",
+		"lint": "uv run ruff check . && biome lint .",
+		"format": "uv run ruff format . && biome format --write .",
+		"typecheck": "uv run pyright && pnpm -r run typecheck",
+		"check": "uv run ruff check . && uv run ruff format --check . && biome check . && pnpm run typecheck",
+		"fix": "uv run ruff check --fix . && uv run ruff format . && biome check --write ."
+	},
+	"devDependencies": {
+		"@biomejs/biome": "catalog:"
 	}
 }

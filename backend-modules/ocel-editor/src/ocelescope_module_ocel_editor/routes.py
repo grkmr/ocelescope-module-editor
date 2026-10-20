@@ -4,10 +4,8 @@ from tempfile import TemporaryDirectory
 from fastapi import APIRouter, Query
 from ocelescope import OCEL
 from ocelescope_backend.app.dependencies import ApiOcel, ApiSession
-from ocelescope_backend.app.internal.model.resource import ResourceApi
 
 from ocelescope_module_ocel_editor.models import EditorAction, EntityType, Pipeline
-from ocelescope_module_ocel_editor.resources import OcelMask
 
 router = APIRouter()
 
@@ -47,14 +45,3 @@ def attributes(
 ) -> list[str]:
     with Pipeline(ocel, actions, session) as pipeline:
         return pipeline.attributes(entity_type, types)
-
-
-@router.get("/masks", operation_id="masks")
-def masks(session: ApiSession) -> list[ResourceApi]:
-    """The session's OCEL masks."""
-    schema_hash = OcelMask.get_schema_hash()
-    return [
-        resource
-        for resource in session.list_resources()
-        if resource.schema_hash == schema_hash
-    ]

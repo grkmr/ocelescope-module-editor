@@ -49,7 +49,6 @@ class Pipeline:
         self._con = ocel.con.cursor()
         set_utc(self._con)
         self._session = session
-        # Resources stay open for the pipeline, so each table loads without reopening
         self._open_resources = ExitStack()
         self._resources: dict[str, TabularResource] = {}
         self._resource_tables: dict[tuple[str, str], str] = {}
@@ -153,7 +152,9 @@ class Pipeline:
             {f"WHERE {in_list(ident(ACTIVITY_COL), types)}" if types else ""}
         """).fetchone()
         return sorted(
-            column for column, count in zip(columns, counts or []) if count > 0
+            column
+            for column, count in zip(columns, counts or [], strict=False)
+            if count > 0
         )
 
     def write(self, path: Path) -> None:

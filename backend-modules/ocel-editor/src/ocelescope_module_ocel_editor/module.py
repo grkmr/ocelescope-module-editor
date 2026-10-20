@@ -8,7 +8,7 @@ from ocelescope_module_ocel_editor.routes import router
 
 class OcelEditor(Module):
     meta = ModuleMeta(key="ocelEditor", version=Version("1.0"))
-    resources = [OcelMask]
+    resources = [OcelMask]  # pyright: ignore[reportAssignmentType]
 
     def create_app(self) -> FastAPI:
         app = FastAPI(title="Ocel Editor", version=str(self.meta.version))

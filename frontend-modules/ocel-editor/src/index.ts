@@ -1,4 +1,4 @@
-import { defineModule, defineModuleRoute } from "@ocelescope/core";
+import { defineModule } from "@ocelescope/core";
 import { SparklesIcon } from "lucide-react";
 import { editorRoute } from "./routes/EditorPage";
 
