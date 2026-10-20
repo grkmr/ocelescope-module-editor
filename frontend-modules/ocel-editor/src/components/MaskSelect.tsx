@@ -1,7 +1,10 @@
-import { Select, type SelectProps } from "@mantine/core";
-import { useMasks } from "../api/ocelEditor";
+import type { SelectProps } from "@mantine/core";
+import { useResources } from "@ocelescope/api-base";
+import { ResourceSelect } from "@ocelescope/resources";
 
-/** The OCEL masks of the session. */
+const MASK_TYPE =
+	"55de364ec6b09b1c17c43044d63e61ef05fdac44afcd69c82b188070eb75e958";
+
 export const MaskSelect = ({
 	value,
 	onChange,
@@ -9,26 +12,21 @@ export const MaskSelect = ({
 }: Omit<SelectProps, "data" | "value" | "onChange"> & {
 	value: string;
 	onChange: (value: string) => void;
-}) => {
-	const { data, isPending } = useMasks();
+}) => (
+	<ResourceSelect
+		label="Mask"
+		placeholder="Search…"
+		searchable
+		radius={0}
+		nothingFoundMessage="No masks in this session"
+		{...props}
+		type={MASK_TYPE}
+		defaultValue={value || null}
+		onChange={(value) => onChange(value ?? "")}
+	/>
+);
 
-	return (
-		<Select
-			label="Mask"
-			placeholder={isPending ? "Loading…" : "Search…"}
-			searchable
-			radius={0}
-			nothingFoundMessage="No masks in this session"
-			data={(data ?? []).map(({ id, name }) => ({ value: id, label: name }))}
-			value={value || null}
-			onChange={(value) => onChange(value ?? "")}
-			{...props}
-		/>
-	);
-};
-
-/** A mask's name, for showing a mask that is referred to by id. */
 export const MaskName = ({ id }: { id: string }) => {
-	const { data } = useMasks();
+	const { data } = useResources({ schema_hash: MASK_TYPE });
 	return <>{data?.find((mask) => mask.id === id)?.name ?? "mask"}</>;
 };
