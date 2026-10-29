@@ -20,13 +20,14 @@ from ocelescope.ocel.constants.tables import (
     OBJECT_CHANGES_TABLE,
     OBJECTS_TABLE,
 )
+from ocelescope.ocel.view import Step
 from ocelescope.util.sql import ident, in_list, literal
 from pydantic import Field, model_validator
 
 from ocelescope_module_ocel_editor.models.base import BaseResponse
 from ocelescope_module_ocel_editor.models.edit.base import (
     EditorActionBase,
-    Step,
+    Resources,
 )
 from ocelescope_module_ocel_editor.resources import OcelMask
 
@@ -50,6 +51,7 @@ Selection = Annotated[TypeSelection | MaskSelection, Field(discriminator="kind")
 
 def selection_condition(
     step: Step,
+    resources: Resources,
     selection: TypeSelection | MaskSelection,
     table: str,
     key: str,
@@ -59,7 +61,7 @@ def selection_condition(
     """SQL that is true for the rows of ``table`` that ``selection`` picks."""
     if isinstance(selection, TypeSelection):
         return in_list(f"{alias}{ident(type_column)}", selection.names)
-    mask = step.resource(selection.mask_id, OcelMask)[table]
+    mask = resources.table(step, selection.mask_id, OcelMask, table)
     key = ident(key)
     return f"{alias}{key} IN (SELECT {key} FROM {mask} WHERE {key} IS NOT NULL)"
 
@@ -113,16 +115,13 @@ def rename_static(
     """Set ``column`` of ``table`` to the static name where ``selected`` holds."""
     column = ident(column)
 
-    step.define(
-        table,
-        f"""
+    step[table] = f"""
         SELECT * REPLACE (
             CASE WHEN {selected}
             THEN {literal(new_name.name)} ELSE {column} END AS {column}
         )
         FROM {step[table]}
-    """,
-    )
+    """
 
 
 class ObjectTypeRename(EditorActionBase):
@@ -130,26 +129,32 @@ class ObjectTypeRename(EditorActionBase):
     selection: Selection
     new_name: NewTypeName
 
-    def build(self, step: Step) -> None:
+    def build(self, step: Step, resources: Resources) -> None:
         if isinstance(self.new_name, StaticTypeName):
             selected = selection_condition(
-                step, self.selection, OBJECTS_TABLE, OID_COL, OTYPE_COL
+                step, resources, self.selection, OBJECTS_TABLE, OID_COL, OTYPE_COL
             )
             rename_static(step, OBJECTS_TABLE, OTYPE_COL, selected, self.new_name)
         else:
-            self._rename_by_attribute(step, self.new_name)
+            self._rename_by_attribute(step, resources, self.new_name)
 
-    def _rename_by_attribute(self, step: Step, new_name: AttributeTypeName) -> None:
+    def _rename_by_attribute(
+        self, step: Step, resources: Resources, new_name: AttributeTypeName
+    ) -> None:
         oid, otype = ident(OID_COL), ident(OTYPE_COL)
         attribute = ident(new_name.attribute)
         selected = selection_condition(
-            step, self.selection, OBJECTS_TABLE, OID_COL, OTYPE_COL, alias="o."
+            step,
+            resources,
+            self.selection,
+            OBJECTS_TABLE,
+            OID_COL,
+            OTYPE_COL,
+            alias="o.",
         )
         drop = new_name.missing == "drop"
 
-        step.define(
-            OBJECTS_TABLE,
-            f"""
+        step[OBJECTS_TABLE] = f"""
             SELECT o.* REPLACE (
                 {new_name.renamed(selected, "latest.value", f"o.{otype}")} AS {otype}
             )
@@ -163,8 +168,7 @@ class ObjectTypeRename(EditorActionBase):
                 GROUP BY {oid}
             ) latest USING ({oid})
             {f"WHERE NOT ({selected} AND latest.value IS NULL)" if drop else ""}
-        """,
-        )
+        """
 
         if drop:
             self._drop_dangling(step)
@@ -172,7 +176,10 @@ class ObjectTypeRename(EditorActionBase):
     @staticmethod
     def _drop_dangling(step: Step) -> None:
         """Drop what belongs to objects no longer in the objects table."""
-        kept = f"(SELECT {ident(OID_COL)} FROM {step[OBJECTS_TABLE]})"
+        oid = ident(OID_COL)
+        kept = step.materialize(
+            "kept_objects", f"SELECT {oid} FROM {step[OBJECTS_TABLE]}"
+        )
         for table, columns in (
             (E2O_TABLE, [OID_COL]),
             (O2O_TABLE, [O2O_SOURCE_ID, O2O_TARGET_ID]),
@@ -180,10 +187,10 @@ class ObjectTypeRename(EditorActionBase):
             (QUANTITIES_TABLE, [OID_COL]),
             (QUANTITY_OPERATIONS_TABLE, [OID_COL]),
         ):
-            step.define(
-                table,
-                f"SELECT * FROM {step[table]} WHERE "
-                + " AND ".join(f"{ident(column)} IN {kept}" for column in columns),
+            if table not in step.tables:
+                continue
+            step[table] = f"SELECT * FROM {step[table]} WHERE " + " AND ".join(
+                f"{ident(column)} IN (SELECT {oid} FROM {kept})" for column in columns
             )
 
 
@@ -192,32 +199,31 @@ class ActivityRename(EditorActionBase):
     selection: Selection
     new_name: NewTypeName
 
-    def build(self, step: Step) -> None:
+    def build(self, step: Step, resources: Resources) -> None:
         if isinstance(self.new_name, StaticTypeName):
             selected = selection_condition(
-                step, self.selection, EVENTS_TABLE, EID_COL, ACTIVITY_COL
+                step, resources, self.selection, EVENTS_TABLE, EID_COL, ACTIVITY_COL
             )
             rename_static(step, EVENTS_TABLE, ACTIVITY_COL, selected, self.new_name)
         else:
-            self._rename_by_attribute(step, self.new_name)
+            self._rename_by_attribute(step, resources, self.new_name)
 
-    def _rename_by_attribute(self, step: Step, new_name: AttributeTypeName) -> None:
+    def _rename_by_attribute(
+        self, step: Step, resources: Resources, new_name: AttributeTypeName
+    ) -> None:
         activity = ident(ACTIVITY_COL)
         attribute = ident(new_name.attribute)
         selected = selection_condition(
-            step, self.selection, EVENTS_TABLE, EID_COL, ACTIVITY_COL
+            step, resources, self.selection, EVENTS_TABLE, EID_COL, ACTIVITY_COL
         )
         value = f"CAST({attribute} AS VARCHAR)"
         drop = new_name.missing == "drop"
 
-        step.define(
-            EVENTS_TABLE,
-            f"""
+        step[EVENTS_TABLE] = f"""
             SELECT * REPLACE ({new_name.renamed(selected, value, activity)} AS {activity})
             FROM {step[EVENTS_TABLE]}
             {f"WHERE NOT ({selected} AND {attribute} IS NULL)" if drop else ""}
-        """,
-        )
+        """
 
         if drop:
             self._drop_dangling(step)
@@ -226,9 +232,12 @@ class ActivityRename(EditorActionBase):
     def _drop_dangling(step: Step) -> None:
         """Drop what belongs to events no longer in the events table."""
         eid = ident(EID_COL)
+        kept = step.materialize(
+            "kept_events", f"SELECT {eid} FROM {step[EVENTS_TABLE]}"
+        )
         for table in (E2O_TABLE, QUANTITY_OPERATIONS_TABLE):
-            step.define(
-                table,
-                f"SELECT * FROM {step[table]} "
-                f"WHERE {eid} IN (SELECT {eid} FROM {step[EVENTS_TABLE]})",
+            if table not in step.tables:
+                continue
+            step[table] = (
+                f"SELECT * FROM {step[table]} WHERE {eid} IN (SELECT {eid} FROM {kept})"
             )

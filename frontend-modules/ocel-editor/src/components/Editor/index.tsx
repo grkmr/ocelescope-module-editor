@@ -1,84 +1,187 @@
-import { Alert, Button, Menu, Stack } from "@mantine/core";
-import { Plus } from "lucide-react";
-import { Controller, useWatch } from "react-hook-form";
-import { useEditor } from "../../hooks/useEditor";
-import { EditorHeader } from "./EditorHeader";
-import { actions, actionTypes, EditorInput, validateAction } from "./inputs";
+import {
+	ActionIcon,
+	Box,
+	Center,
+	Divider,
+	Group,
+	Stack,
+	Text,
+	Title,
+	Tooltip,
+} from "@mantine/core";
+import { CheckIcon, InfoIcon, RotateCcwIcon, Trash2Icon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import type { EditAction, EditActionType, Pipeline } from "../../types/edit";
+import { ACTION_KINDS, completeSteps, kindOf } from "../Actions";
+import { PipelineList } from "../Pipeline/PipelineList";
+import { SaveAsOcel } from "./SaveAsOcel";
 
-const OcelEditor = () => {
-	const { form, fields, append, remove, move, ocelId, mutation, submit } =
-		useEditor();
-	const pipeline = useWatch({ control: form.control, name: "pipeline" });
-
-	const validSteps = (index: number) =>
-		pipeline.slice(0, index).filter((step) => validateAction(step) === true);
-
-	if (!ocelId) {
-		return <Alert color="yellow">Select an OCEL to edit.</Alert>;
-	}
-
-	return (
-		<form onSubmit={submit}>
-			<Stack>
-				<EditorHeader
-					nameInput={form.register("name", {
-						required: "Give the new OCEL a name",
-					})}
-					nameError={form.formState.errors.name?.message}
-					loading={mutation.isPending}
-				/>
-
-				{mutation.isError && (
-					<Alert color="red">Editing the OCEL failed.</Alert>
-				)}
-				{mutation.isSuccess && (
-					<Alert color="green">The new OCEL was created.</Alert>
-				)}
-
-				{fields.map((field, index) => (
-					<Controller
-						key={field.id}
-						control={form.control}
-						name={`pipeline.${index}`}
-						rules={{ validate: validateAction }}
-						render={({ field: { value, onChange }, fieldState }) => (
-							<EditorInput
-								value={value}
-								onChange={onChange}
-								steps={validSteps(index)}
-								onMoveUp={index > 0 ? () => move(index, index - 1) : undefined}
-								onMoveDown={
-									index < fields.length - 1
-										? () => move(index, index + 1)
-										: undefined
-								}
-								onRemove={() => remove(index)}
-								invalid={fieldState.invalid}
-							/>
-						)}
-					/>
-				))}
-
-				<Menu>
-					<Menu.Target>
-						<Button variant="light" radius={0} leftSection={<Plus size={16} />}>
-							Add step
-						</Button>
-					</Menu.Target>
-					<Menu.Dropdown>
-						{actionTypes.map((type) => (
-							<Menu.Item
-								key={type}
-								onClick={() => append(actions[type].create())}
-							>
-								{actions[type].label}
-							</Menu.Item>
-						))}
-					</Menu.Dropdown>
-				</Menu>
-			</Stack>
-		</form>
-	);
+type EditorFormProps = {
+	ocelId: string;
+	currentEdit: EditAction[];
+	onSubmit?: (pipeline: EditAction[]) => void;
 };
 
-export default OcelEditor;
+const PIPELINE_NOTE =
+	"The steps run from top to bottom on the original log, each on the log as the steps before it leave it. Applying makes the result the OCEL's active log; incomplete steps are skipped.";
+
+export const EditorForm = ({
+	ocelId,
+	currentEdit,
+	onSubmit,
+}: EditorFormProps) => {
+	const { control, handleSubmit, reset, formState } = useForm<Pipeline>({
+		defaultValues: { steps: currentEdit },
+	});
+
+	const { fields, append, remove, move } = useFieldArray({
+		control,
+		name: "steps",
+	});
+	const steps = useWatch({ control, name: "steps" });
+
+	const [selectedId, setSelectedId] = useState<string | undefined>(
+		fields[0]?.id,
+	);
+	const ids = fields.map(({ id }) => id);
+	const selectedIndex = fields.findIndex(({ id }) => id === selectedId);
+	const selectedStep = steps[selectedIndex];
+	const before = completeSteps(steps.slice(0, Math.max(selectedIndex, 0)));
+
+	const selectAdded = useRef(false);
+	useEffect(() => {
+		if (selectAdded.current) {
+			selectAdded.current = false;
+			setSelectedId(fields[fields.length - 1]?.id);
+		}
+	}, [fields]);
+
+	const addStep = (type: EditActionType) => {
+		selectAdded.current = true;
+		append(ACTION_KINDS[type].create());
+	};
+
+	return (
+		<Group h="100%" gap={0} wrap="nowrap" align="stretch">
+			<Box
+				flex={1}
+				miw={0}
+				p="md"
+				style={{ overflow: "auto", display: "flex", flexDirection: "column" }}
+			>
+				{selectedStep ? (
+					<Stack gap="md" flex={1} mih={0}>
+						<Stack gap={4}>
+							<Title order={4}>
+								{selectedIndex + 1}. {kindOf(selectedStep).title}
+							</Title>
+							<Text size="sm" c="dimmed">
+								{kindOf(selectedStep).description}
+							</Text>
+						</Stack>
+						<Controller
+							key={selectedId}
+							control={control}
+							name={`steps.${selectedIndex}`}
+							render={({ field }) => {
+								const { Panel } = kindOf(field.value);
+								return (
+									<Panel
+										ocelId={ocelId}
+										action={field.value}
+										before={before}
+										onChange={(step) =>
+											field.onChange({ target: { value: step } })
+										}
+									/>
+								);
+							}}
+						/>
+					</Stack>
+				) : (
+					<Center flex={1}>
+						<Text c="dimmed" size="sm" maw={360} ta="center">
+							{fields.length === 0
+								? "Add an edit to the pipeline on the right to start editing."
+								: "Select a step on the right to edit it."}
+						</Text>
+					</Center>
+				)}
+			</Box>
+
+			<Stack
+				w={320}
+				gap="sm"
+				py="md"
+				style={{ borderLeft: "1px solid var(--mantine-color-default-border)" }}
+			>
+				<Group justify="space-between" wrap="nowrap" h={28} px="md">
+					<Group gap={6} wrap="nowrap">
+						<Title order={5} lh={1}>
+							Pipeline
+						</Title>
+						<Tooltip label={PIPELINE_NOTE} multiline w={280} withArrow>
+							<InfoIcon
+								size={16}
+								color="var(--mantine-color-dimmed)"
+								aria-label="How the pipeline is applied"
+							/>
+						</Tooltip>
+					</Group>
+					<Group justify="flex-end" gap={4} wrap="nowrap" ml="auto">
+						{formState.isDirty && (
+							<>
+								<Tooltip label="Apply">
+									<ActionIcon
+										variant="subtle"
+										onClick={handleSubmit((data) =>
+											onSubmit?.(completeSteps(data.steps)),
+										)}
+										color="green"
+									>
+										<CheckIcon size={20} />
+									</ActionIcon>
+								</Tooltip>
+								<Tooltip label="Discard changes">
+									<ActionIcon
+										variant="subtle"
+										color="yellow"
+										onClick={() => reset({ steps: currentEdit })}
+									>
+										<RotateCcwIcon size={20} />
+									</ActionIcon>
+								</Tooltip>
+							</>
+						)}
+						<SaveAsOcel ocelId={ocelId} pipeline={completeSteps(steps)} />
+						{currentEdit.length > 0 && (
+							<Tooltip label="Remove all edits">
+								<ActionIcon
+									variant="subtle"
+									color="red"
+									onClick={() => onSubmit?.([])}
+								>
+									<Trash2Icon size={20} />
+								</ActionIcon>
+							</Tooltip>
+						)}
+					</Group>
+				</Group>
+				<Divider />
+				<PipelineList
+					flex={1}
+					mih={0}
+					px="md"
+					ids={ids}
+					steps={steps}
+					selectedId={selectedId}
+					onSelect={setSelectedId}
+					onRemove={remove}
+					onMove={move}
+					onAdd={addStep}
+				/>
+			</Stack>
+		</Group>
+	);
+};

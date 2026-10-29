@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
-import type { EditMutationBody } from "../api/ocelEditor";
+import type { SetEditMutationBody } from "../api/ocelEditor";
 
-export type EditAction = EditMutationBody[number];
+export type EditAction = SetEditMutationBody[number];
 
 export type EditActionType = NonNullable<EditAction["type"]>;
 
@@ -14,18 +14,22 @@ export type ActionErrors<T extends EditActionType> = Partial<
 	Record<keyof EditActionOf<T>, string>
 >;
 
-export type EditInputProps<T extends EditActionType> = {
-	value: EditActionOf<T>;
-	onChange: (value: EditActionOf<T>) => void;
-	errors?: ActionErrors<T>;
-	steps: EditAction[];
-};
+export type Pipeline = { steps: EditAction[] };
 
-export type ActionDefinition<T extends EditActionType> = {
-	label: string;
+export type ActionPanel<T extends EditActionType> = ComponentType<{
+	ocelId: string;
+	action: EditActionOf<T>;
+	onChange: (action: EditActionOf<T>) => void;
+	/** The complete steps before this one: the panel shows the log as they leave it. */
+	before: EditAction[];
+}>;
+
+export type ActionKind<T extends EditActionType> = {
+	title: string;
+	description: string;
+	Panel: ActionPanel<T>;
 	create: () => EditActionOf<T>;
-	name: (action: EditActionOf<T>) => string;
-	title: (action: EditActionOf<T>) => ReactNode;
+	summary: (action: EditActionOf<T>) => ReactNode;
+	/** What is missing or wrong, by field; empty when the step is complete. */
 	validate: (action: EditActionOf<T>) => ActionErrors<T>;
-	Input: ComponentType<EditInputProps<T>>;
 };

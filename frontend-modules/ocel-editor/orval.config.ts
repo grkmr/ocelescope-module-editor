@@ -9,9 +9,8 @@ export default defineConfig({
 			target: "./src/api/ocelEditor.ts",
 			override: {
 				operations: {
-					// POSTs so the pipeline can go in the body, but they only read
-					types: { query: { useQuery: true } },
-					attributes: { query: { useQuery: true } },
+					// A POST so the steps can go in the body, but it only registers a view
+					registerView: { query: { useQuery: true, useMutation: false } },
 				},
 			},
 		},

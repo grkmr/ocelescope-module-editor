@@ -1,70 +1,77 @@
 from abc import ABC, abstractmethod
-from collections.abc import Callable
-from itertools import count
+from contextlib import ExitStack
+from typing import TYPE_CHECKING, Self
 
-from duckdb import DuckDBPyConnection
 from ocelescope import TabularResource
-from ocelescope.util.sql import ident
+from ocelescope.ocel.view import Step, ViewOperation
 
 from ocelescope_module_ocel_editor.models.base import BaseResponse
 
-ResourceLoader = Callable[[str, type[TabularResource], str], str]
-"""Loads one table of a resource into a pipeline, giving the relation to read it from."""
+if TYPE_CHECKING:
+    from ocelescope_backend.app.internal.session import Session
+
+BATCH_SIZE = 100_000
 
 
-class ResourceTables:
-    """The tables of a resource, each loaded the first time it is read."""
+class Resources:
+    """The session's resources, as the steps of one :class:`OCELView` read them.
 
-    def __init__(
-        self, id: str, resource_class: type[TabularResource], load: ResourceLoader
-    ):
-        self._id = id
-        self._resource_class = resource_class
-        self._load = load
-
-    def __getitem__(self, table: str) -> str:
-        return self._load(self._id, self._resource_class, table)
-
-
-class Step:
-    """The OCEL's tables as one action of a pipeline leaves them.
-
-    Each table is a relation the next action reads from: the stored table, or a
-    view an earlier action defined over it. An action changes a table by
-    defining a new view, so the log itself is never written to or copied.
+    A table is stored in the view the first time a step reads it, so a view
+    reading a resource stays valid once the resource is closed. Resources are
+    opened as they are first read and closed with :meth:`close` -- after the
+    view is built. One instance serves one view: the relations it hands out
+    live in that view's catalog.
     """
 
-    def __init__(
+    def __init__(self, session: "Session | None"):
+        self._session = session
+        self._open = ExitStack()
+        self._resources: dict[str, TabularResource] = {}
+        self._tables: dict[tuple[str, str], str] = {}
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *_exc) -> None:
+        self.close()
+
+    def close(self) -> None:
+        self._open.close()
+
+    def table(
         self,
-        con: DuckDBPyConnection,
-        index: int,
-        tables: dict[str, str],
-        load_resource: ResourceLoader,
-    ):
-        self._con = con
-        self._index = index
-        self._views = count()
-        self._load_resource = load_resource
-        self.tables = dict(tables)
-
-    def __getitem__(self, table: str) -> str:
-        """The relation ``table`` reads from as of this step, quoted for SQL."""
-        return self.tables[table]
-
-    def define(self, table: str, query: str) -> None:
-        """Make ``query`` what ``table`` is from here on."""
-        view = ident(f"step{self._index}_{next(self._views)}_{table}")
-        self._con.execute(f"CREATE TEMP VIEW {view} AS {query}")
-        self.tables[table] = view
-
-    def resource(
-        self, id: str, resource_class: type[TabularResource]
-    ) -> ResourceTables:
-        """The tables of the session's resource ``id``, as relations to read from."""
-        return ResourceTables(id, resource_class, self._load_resource)
+        step: Step,
+        id: str,
+        resource_class: type[TabularResource],
+        table: str,
+    ) -> str:
+        """``table`` of the session's resource ``id``, as a relation to read from."""
+        if (id, table) not in self._tables:
+            if id not in self._resources:
+                if self._session is None:
+                    raise ValueError("Resources need a session to be loaded from")
+                self._resources[id] = self._open.enter_context(
+                    self._session.open_resource(id, resource_class)
+                )
+            self._tables[id, table] = step.load(
+                f"resource_{table}",
+                getattr(self._resources[id], table).fetch_record_batch(BATCH_SIZE),
+            )
+        return self._tables[id, table]
 
 
 class EditorActionBase(BaseResponse, ABC):
     @abstractmethod
+    def build(self, step: Step, resources: Resources) -> None:
+        """Set, on ``step``, the tables this action changes the log by."""
+
+
+class Edit(ViewOperation):
+    """``action`` as a step of an :class:`OCELView`, reading ``resources``."""
+
+    def __init__(self, action: EditorActionBase, resources: Resources):
+        self.action = action
+        self.resources = resources
+
     def build(self, step: Step) -> None:
-        """Define the views this action changes the log by on ``step``."""
+        self.action.build(step, self.resources)
