@@ -3,7 +3,7 @@ from ocelescope_backend.app.modules import Module, ModuleMeta
 from packaging.version import Version
 
 from ocelescope_module_ocel_editor.resources import OcelMask
-from ocelescope_module_ocel_editor.routes import router
+from ocelescope_module_ocel_editor.routers import router
 
 
 class OcelEditor(Module):

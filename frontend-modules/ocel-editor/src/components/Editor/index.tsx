@@ -1,5 +1,4 @@
 import {
-	ActionIcon,
 	Box,
 	Center,
 	Divider,
@@ -9,31 +8,21 @@ import {
 	Title,
 	Tooltip,
 } from "@mantine/core";
-import { CheckIcon, InfoIcon, RotateCcwIcon, Trash2Icon } from "lucide-react";
+import { InfoIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
-import type { EditAction, EditActionType, Pipeline } from "../../types/edit";
+import type { EditActionType, Pipeline } from "../../types/edit";
 import { ACTION_KINDS, completeSteps, kindOf } from "../Actions";
 import { PipelineList } from "../Pipeline/PipelineList";
 import { SaveAsOcel } from "./SaveAsOcel";
 
-type EditorFormProps = {
-	ocelId: string;
-	currentEdit: EditAction[];
-	onSubmit?: (pipeline: EditAction[]) => void;
-};
+type EditorFormProps = { ocelId: string };
 
 const PIPELINE_NOTE =
-	"The steps run from top to bottom on the original log, each on the log as the steps before it leave it. Applying makes the result the OCEL's active log; incomplete steps are skipped.";
+	"The steps run from top to bottom on the original log, each on the log as the steps before it leave it. Saving adds the result to the session as a new OCEL; incomplete steps are skipped.";
 
-export const EditorForm = ({
-	ocelId,
-	currentEdit,
-	onSubmit,
-}: EditorFormProps) => {
-	const { control, handleSubmit, reset, formState } = useForm<Pipeline>({
-		defaultValues: { steps: currentEdit },
-	});
+export const EditorForm = ({ ocelId }: EditorFormProps) => {
+	const { control } = useForm<Pipeline>({ defaultValues: { steps: [] } });
 
 	const { fields, append, remove, move } = useFieldArray({
 		control,
@@ -125,47 +114,12 @@ export const EditorForm = ({
 							<InfoIcon
 								size={16}
 								color="var(--mantine-color-dimmed)"
-								aria-label="How the pipeline is applied"
+								aria-label="How the pipeline runs"
 							/>
 						</Tooltip>
 					</Group>
 					<Group justify="flex-end" gap={4} wrap="nowrap" ml="auto">
-						{formState.isDirty && (
-							<>
-								<Tooltip label="Apply">
-									<ActionIcon
-										variant="subtle"
-										onClick={handleSubmit((data) =>
-											onSubmit?.(completeSteps(data.steps)),
-										)}
-										color="green"
-									>
-										<CheckIcon size={20} />
-									</ActionIcon>
-								</Tooltip>
-								<Tooltip label="Discard changes">
-									<ActionIcon
-										variant="subtle"
-										color="yellow"
-										onClick={() => reset({ steps: currentEdit })}
-									>
-										<RotateCcwIcon size={20} />
-									</ActionIcon>
-								</Tooltip>
-							</>
-						)}
 						<SaveAsOcel ocelId={ocelId} pipeline={completeSteps(steps)} />
-						{currentEdit.length > 0 && (
-							<Tooltip label="Remove all edits">
-								<ActionIcon
-									variant="subtle"
-									color="red"
-									onClick={() => onSubmit?.([])}
-								>
-									<Trash2Icon size={20} />
-								</ActionIcon>
-							</Tooltip>
-						)}
 					</Group>
 				</Group>
 				<Divider />

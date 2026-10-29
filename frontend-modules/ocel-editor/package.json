@@ -41,7 +41,6 @@
 		"@ocelescope/core": "catalog:",
 		"@ocelescope/resources": "catalog:",
 		"@tanstack/react-query": "catalog:",
-		"@types/object-hash": "catalog:",
 		"@types/react": "catalog:",
 		"axios": "catalog:",
 		"lucide-react": "catalog:",
@@ -54,7 +53,6 @@
 		"@dnd-kit/core": "catalog:",
 		"@dnd-kit/sortable": "catalog:",
 		"@dnd-kit/utilities": "catalog:",
-		"object-hash": "catalog:",
 		"react-hook-form": "catalog:"
 	}
 }

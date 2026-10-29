@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
-import type { SetEditMutationBody } from "../api/ocelEditor";
+import type { SaveAsOcelMutationBody } from "../api/ocelEditor";
 
-export type EditAction = SetEditMutationBody[number];
+export type EditAction = SaveAsOcelMutationBody[number];
 
 export type EditActionType = NonNullable<EditAction["type"]>;
 
