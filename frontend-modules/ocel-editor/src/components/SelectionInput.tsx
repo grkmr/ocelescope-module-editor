@@ -7,20 +7,30 @@ import {
 	Text,
 	UnstyledButton,
 } from "@mantine/core";
-import { ActivityPicker, ObjectTypePicker } from "@ocelescope/core";
+import {
+	ActivityPicker,
+	EventPicker,
+	ObjectPicker,
+	ObjectTypePicker,
+} from "@ocelescope/core";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
-import type { MaskSelection, TypeSelection } from "../api/ocelEditor";
+import type {
+	IdSelection,
+	MaskSelection,
+	TypeSelection,
+} from "../api/ocelEditor";
 import { type ViewParams, viewProps } from "../hooks/useView";
-import { MaskSelect } from "./MaskSelect";
+import { MaskName, MaskSelect } from "./MaskSelect";
 import { ModeMenu } from "./ModeMenu";
 
-export type Selection = TypeSelection | MaskSelection;
+export type Selection = TypeSelection | IdSelection | MaskSelection;
 
 export const selections: {
 	[K in Selection["kind"]]: Extract<Selection, { kind: K }>;
 } = {
 	types: { kind: "types", names: [] },
+	ids: { kind: "ids", ids: [] },
 	mask: { kind: "mask", maskId: "" },
 };
 
@@ -36,9 +46,36 @@ const MaxHeightStyles = () => (
 	/>
 );
 
+export const SelectionName = ({
+	selection,
+	types,
+}: {
+	selection: Selection;
+	types: string;
+}) => {
+	if (selection.kind === "types") {
+		return <>{selection.names.join(", ") || types}</>;
+	}
+	if (selection.kind === "ids") {
+		return <>{`${selection.ids.length} ids`}</>;
+	}
+	return selection.maskId ? <MaskName id={selection.maskId} /> : <>mask</>;
+};
+
+export const selectionProblem = (selection: Selection, type: string) => {
+	if (selection.kind === "mask") {
+		return selection.maskId ? undefined : "Pick a mask";
+	}
+	if (selection.kind === "ids") {
+		return selection.ids.length > 0 ? undefined : "Pick at least one id";
+	}
+	return selection.names.length > 0 ? undefined : `Pick at least one ${type}`;
+};
+
 export const SelectionInput = ({
 	ocelId,
 	entityType,
+	title,
 	view,
 	value,
 	onChange,
@@ -46,18 +83,24 @@ export const SelectionInput = ({
 }: Omit<StackProps, "onChange"> & {
 	ocelId: string;
 	entityType: "object" | "event";
+	title?: string;
 	view: ViewParams;
 	value: Selection;
 	onChange: (value: Selection) => void;
 }) => {
 	const Picker = entityType === "object" ? ObjectTypePicker : ActivityPicker;
+	const IdPicker = entityType === "object" ? ObjectPicker : EventPicker;
 	const [expanded, setExpanded] = useState(true);
+	const entities = entityType === "object" ? "Objects" : "Events";
 	const label =
-		value.kind === "mask"
-			? `${entityType === "object" ? "Objects" : "Events"} of mask`
-			: entityType === "object"
-				? "Object types"
-				: "Activities";
+		title ??
+		(value.kind === "mask"
+			? `${entities} of mask`
+			: value.kind === "ids"
+				? entities
+				: entityType === "object"
+					? "Object types"
+					: "Activities");
 
 	return (
 		<Stack gap={4} className={PICKER_CLASS} {...props}>
@@ -103,6 +146,10 @@ export const SelectionInput = ({
 							value: "types",
 							label: entityType === "object" ? "Object type" : "Activity",
 						},
+						{
+							value: "ids",
+							label: entityType === "object" ? "Object ids" : "Event ids",
+						},
 						{ value: "mask", label: "OCEL mask" },
 					]}
 				/>
@@ -119,6 +166,14 @@ export const SelectionInput = ({
 						onChange={(names) => onChange({ ...value, names })}
 					/>
 				</Collapse>
+			) : value.kind === "ids" ? (
+				<IdPicker
+					multiple
+					ocelId={ocelId}
+					ocelVersion="original"
+					value={value.ids}
+					onChange={(ids) => onChange({ ...value, ids })}
+				/>
 			) : (
 				<MaskSelect
 					label={undefined}

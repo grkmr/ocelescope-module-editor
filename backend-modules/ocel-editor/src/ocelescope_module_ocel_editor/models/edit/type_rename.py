@@ -21,7 +21,7 @@ from ocelescope.ocel.constants.tables import (
     OBJECTS_TABLE,
 )
 from ocelescope.ocel.view import Step
-from ocelescope.util.sql import ident, in_list, literal
+from ocelescope.util.sql import ident, literal
 from pydantic import Field, model_validator
 
 from ocelescope_module_ocel_editor.models.base import BaseResponse
@@ -29,41 +29,10 @@ from ocelescope_module_ocel_editor.models.edit.base import (
     EditorActionBase,
     Resources,
 )
-from ocelescope_module_ocel_editor.resources import OcelMask
-
-
-class TypeSelection(BaseResponse):
-    """Every entity of these types."""
-
-    kind: Literal["types"]
-    names: list[str] = Field(min_length=1)
-
-
-class MaskSelection(BaseResponse):
-    """Every entity an ``OcelMask`` lists."""
-
-    kind: Literal["mask"]
-    mask_id: str
-
-
-Selection = Annotated[TypeSelection | MaskSelection, Field(discriminator="kind")]
-
-
-def selection_condition(
-    step: Step,
-    resources: Resources,
-    selection: TypeSelection | MaskSelection,
-    table: str,
-    key: str,
-    type_column: str,
-    alias: str = "",
-) -> str:
-    """SQL that is true for the rows of ``table`` that ``selection`` picks."""
-    if isinstance(selection, TypeSelection):
-        return in_list(f"{alias}{ident(type_column)}", selection.names)
-    mask = resources.table(step, selection.mask_id, OcelMask, table)
-    key = ident(key)
-    return f"{alias}{key} IN (SELECT {key} FROM {mask} WHERE {key} IS NOT NULL)"
+from ocelescope_module_ocel_editor.models.edit.selection import (
+    Selection,
+    selection_condition,
+)
 
 
 class StaticTypeName(BaseResponse):

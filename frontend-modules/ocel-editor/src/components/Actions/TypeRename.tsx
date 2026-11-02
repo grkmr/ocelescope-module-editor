@@ -8,10 +8,14 @@ import type {
 	EditActionOf,
 } from "../../types/edit";
 import { AttributeSelect } from "../AttributeSelect";
-import { MaskName } from "../MaskSelect";
 import { ModeMenu } from "../ModeMenu";
 import { Previewed } from "../Previewed";
-import { SelectionInput, selections } from "../SelectionInput";
+import {
+	SelectionInput,
+	SelectionName,
+	selectionProblem,
+	selections,
+} from "../SelectionInput";
 
 type RenameType = "rename-object-type" | "rename-activity";
 type RenameAction = EditActionOf<RenameType>;
@@ -72,7 +76,7 @@ const TypeRenamePanel: ActionPanel<RenameType> = ({
 									miw={0}
 									ocelId={ocelId}
 									entityType={entityType}
-									types={selection.kind === "mask" ? [] : selection.names}
+									types={selection.kind === "types" ? selection.names : []}
 									view={view}
 									value={newName.attribute}
 									onChange={(attribute) =>
@@ -173,36 +177,24 @@ const typeRename = <T extends RenameType>({
 				newName: newNames.static,
 			}) as RenameAction,
 		summary: ({ selection, newName }) => {
-			const from =
-				selection.kind === "mask" ? (
-					selection.maskId ? (
-						<MaskName id={selection.maskId} />
-					) : (
-						"mask"
-					)
-				) : (
-					selection.names.join(", ") || types.many
-				);
 			const to =
 				newName.kind === "static"
 					? newName.name || "new name"
 					: `value of ${newName.attribute || "attribute"}`;
 			return (
 				<>
-					{from} → {to}
+					<SelectionName selection={selection} types={types.many} /> → {to}
 				</>
 			);
 		},
 		validate: ({ selection, newName }): ActionErrors<RenameType> => ({
-			...(selection.kind === "mask"
-				? !selection.maskId && { selection: "Pick a mask" }
-				: selection.names.length === 0 && {
-						selection: `Pick at least one ${types.one}`,
-					}),
+			...(selectionProblem(selection, types.one) && {
+				selection: selectionProblem(selection, types.one),
+			}),
 			...(newName.kind === "static"
 				? !newName.name.trim()
 					? { newName: "Enter a new name" }
-					: selection.kind !== "mask" &&
+					: selection.kind === "types" &&
 						selection.names.length === 1 &&
 						selection.names[0] === newName.name && {
 							newName: "Must differ from the current name",
