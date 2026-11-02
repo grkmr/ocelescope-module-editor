@@ -46,7 +46,7 @@ const AddRelationsPanel: ActionPanel<AddType> = ({
 	const sourceType = sourceTypes[action.type];
 
 	return (
-		<Previewed query={{ data: view, isPending: true, error: null }}>
+		<Previewed query={view}>
 			{(view) => (
 				<Stack gap="md">
 					<SegmentedControl

@@ -8,13 +8,14 @@ from ocelescope_module_ocel_editor.models.edit.base import (
     EditorActionBase,
     Resources,
 )
+from ocelescope_module_ocel_editor.models.edit.merge_objects import MergeObjects
 from ocelescope_module_ocel_editor.models.edit.type_rename import (
     ActivityRename,
     ObjectTypeRename,
 )
 
 EditorAction: TypeAlias = Annotated[
-    ObjectTypeRename | ActivityRename | AddE2O | AddO2O,
+    ObjectTypeRename | ActivityRename | AddE2O | AddO2O | MergeObjects,
     Field(discriminator="type"),
 ]
 
@@ -25,6 +26,7 @@ __all__ = [
     "Edit",
     "EditorAction",
     "EditorActionBase",
+    "MergeObjects",
     "ObjectTypeRename",
     "Resources",
 ]

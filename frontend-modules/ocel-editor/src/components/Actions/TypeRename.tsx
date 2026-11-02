@@ -43,7 +43,7 @@ const TypeRenamePanel: ActionPanel<RenameType> = ({
 	const entities = entityType === "object" ? "Objects" : "Events";
 
 	return (
-		<Previewed query={{ data: view, isPending: true, error: null }}>
+		<Previewed query={view}>
 			{(view) => (
 				<Stack gap="md">
 					<SelectionInput

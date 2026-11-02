@@ -5,6 +5,7 @@ import type {
 	EditActionType,
 } from "../../types/edit";
 import { AddE2O, AddO2O } from "./AddRelations";
+import { MergeObjects } from "./MergeObjects";
 import { ActivityRename, ObjectTypeRename } from "./TypeRename";
 
 export const ACTION_KINDS: { [T in EditActionType]: ActionKind<T> } = {
@@ -12,6 +13,7 @@ export const ACTION_KINDS: { [T in EditActionType]: ActionKind<T> } = {
 	"rename-activity": ActivityRename,
 	"add-e2o": AddE2O,
 	"add-o2o": AddO2O,
+	"merge-objects": MergeObjects,
 };
 
 export const kindOf = <T extends EditActionType>(action: EditActionOf<T>) =>

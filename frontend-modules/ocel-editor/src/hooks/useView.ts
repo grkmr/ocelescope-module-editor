@@ -9,18 +9,23 @@ const ORIGINAL: ViewParams = { ocel_version: "original" };
 export const useView = (
 	ocelId: string,
 	steps: EditAction[],
-): ViewParams | undefined => {
-	const { data } = useRegisterView(ocelId, steps, {
+): { data?: ViewParams; isPending: boolean; error: unknown } => {
+	const { data, isPending, error } = useRegisterView(ocelId, steps, {
 		query: {
 			enabled: steps.length > 0,
 			placeholderData: keepPreviousData,
 			staleTime: Infinity,
+			retry: false,
 		},
 	});
 	if (steps.length === 0 || data === null) {
-		return ORIGINAL;
+		return { data: ORIGINAL, isPending: false, error: null };
 	}
-	return data === undefined ? undefined : { view_id: data };
+	return {
+		data: data === undefined ? undefined : { view_id: data },
+		isPending,
+		error,
+	};
 };
 
 export const viewProps = (view: ViewParams) =>

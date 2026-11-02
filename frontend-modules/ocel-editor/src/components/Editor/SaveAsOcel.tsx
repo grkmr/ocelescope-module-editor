@@ -10,6 +10,7 @@ import {
 import { SaveIcon } from "lucide-react";
 import { useState } from "react";
 import { useSaveAsOcel } from "../../api/ocelEditor";
+import { apiError } from "../../lib/apiError";
 import type { EditAction } from "../../types/edit";
 
 /** Adds the log as `pipeline` leaves it to the session as an OCEL of its own. */
@@ -22,7 +23,7 @@ export const SaveAsOcel = ({
 }) => {
 	const [opened, setOpened] = useState(false);
 	const [name, setName] = useState("");
-	const { mutate, isPending, isError } = useSaveAsOcel({
+	const { mutate, isPending, error } = useSaveAsOcel({
 		mutation: {
 			onSuccess: () => {
 				setOpened(false);
@@ -61,9 +62,9 @@ export const SaveAsOcel = ({
 						onChange={(e) => setName(e.currentTarget.value)}
 						onKeyDown={(e) => e.key === "Enter" && save()}
 					/>
-					{isError && (
+					{error && (
 						<Text c="red" size="xs">
-							Saving the OCEL failed.
+							{apiError(error, "Saving the OCEL failed.")}
 						</Text>
 					)}
 					<Button

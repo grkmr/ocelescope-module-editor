@@ -9,21 +9,15 @@ import {
 } from "@mantine/core";
 import { useResources } from "@ocelescope/api-base";
 import { useInvalidate } from "@ocelescope/core";
-import type { AxiosError } from "axios";
 import { Upload } from "lucide-react";
 import { useUploadMask } from "../api/ocelEditor";
+import { apiError } from "../lib/apiError";
 
 const MASK_TYPE =
 	"55de364ec6b09b1c17c43044d63e61ef05fdac44afcd69c82b188070eb75e958";
 
 const CSV_HELP =
 	"Upload a CSV of one of the mask's tables as a new mask: ocel:oid for objects, ocel:eid for events, both for E2O relations, or ocel:oid_1 and ocel:oid_2 for O2O relations (ocel:qualifier optional).";
-
-const uploadError = (error: unknown) => {
-	const detail = (error as AxiosError<{ detail?: unknown }>).response?.data
-		?.detail;
-	return typeof detail === "string" ? detail : "Uploading the CSV failed";
-};
 
 export const MaskSelect = ({
 	value,
@@ -56,7 +50,11 @@ export const MaskSelect = ({
 			data={masks.map(({ id, name }) => ({ value: id, label: name }))}
 			value={value || null}
 			onChange={(value) => onChange(value ?? "")}
-			error={upload.isError ? uploadError(upload.error) : error}
+			error={
+				upload.isError
+					? apiError(upload.error, "Uploading the CSV failed")
+					: error
+			}
 			rightSectionPointerEvents="all"
 			rightSectionWidth={56}
 			rightSection={

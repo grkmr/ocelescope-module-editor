@@ -1,5 +1,6 @@
 import { Center, Loader, Text } from "@mantine/core";
 import type { ReactNode } from "react";
+import { apiError } from "../lib/apiError";
 
 type PreviewQuery<T> = { data?: T; isPending: boolean; error: unknown };
 
@@ -17,7 +18,10 @@ export const Previewed = <T,>({
 	if (query.error) {
 		return (
 			<Text c="red" size="sm">
-				Could not load the log as the steps before leave it.
+				{apiError(
+					query.error,
+					"Could not load the log as the steps before leave it.",
+				)}
 			</Text>
 		);
 	}

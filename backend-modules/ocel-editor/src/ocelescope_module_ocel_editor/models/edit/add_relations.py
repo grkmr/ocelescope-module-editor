@@ -67,7 +67,8 @@ class _AddRelations(EditorActionBase, ABC):
     """Add relations to the log, leaving out those it already has.
 
     A relation is the same when its source, target and qualifier are. Only
-    relations between entities still in the log at this step are added.
+    relations between entities still in the log at this step are added, and none
+    from an entity to itself.
     """
 
     table: ClassVar[str]
@@ -104,8 +105,6 @@ class _AddRelations(EditorActionBase, ABC):
             f"SELECT s.id AS {source}, t.id AS {target}, "
             f"{literal(self.qualifier)} AS {qualifier} "
             f"FROM ({sources}) s CROSS JOIN ({targets}) t"
-            # An object is not related to itself by being picked on both sides.
-            + (" WHERE s.id <> t.id" if self.table == O2O_TABLE else "")
         )
 
     @staticmethod
@@ -131,12 +130,16 @@ class _AddRelations(EditorActionBase, ABC):
         source_id = ident(self.source_entities.id_column)
         target_id = ident(self.target_entities.id_column)
 
+        # An event and an object may share an id; only an object can loop.
+        self_loops = f"c.{source} <> c.{target}" if self.table == O2O_TABLE else "TRUE"
+
         added = step.materialize(
             f"added_{self.table}",
             f"""
             SELECT DISTINCT c.{source}, c.{target}, c.{qualifier}
             FROM ({self._candidates(step, resources)}) c
-            WHERE c.{source} IN (
+            WHERE {self_loops}
+            AND c.{source} IN (
                 SELECT {source_id} FROM {step[self.source_entities.table]}
             )
             AND c.{target} IN (

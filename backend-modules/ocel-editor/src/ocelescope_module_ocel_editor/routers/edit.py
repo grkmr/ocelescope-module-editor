@@ -3,7 +3,7 @@
 import json
 from typing import Annotated
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, HTTPException
 from ocelescope_backend.app.dependencies import ApiSession
 from ocelescope_backend.app.internal.model.ocel import SessionOCEL
 from ocelescope_backend.app.internal.model.view import SessionView
@@ -30,14 +30,17 @@ def create_editor_view(
     temporary: bool = False,
 ) -> SessionView:
     """The log as ``pipeline`` leaves it, as a view of ``handle``'s original log."""
-    with Resources(session) as resources:
-        return handle.create_view(
-            [Edit(step, resources) for step in pipeline],
-            EDITOR_SOURCE,
-            pipeline_key(pipeline),
-            name=name,
-            temporary=temporary,
-        )
+    try:
+        with Resources(session) as resources:
+            return handle.create_view(
+                [Edit(step, resources) for step in pipeline],
+                EDITOR_SOURCE,
+                pipeline_key(pipeline),
+                name=name,
+                temporary=temporary,
+            )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
 
 
 @router.post("/{ocel_id}/views", operation_id="registerView")

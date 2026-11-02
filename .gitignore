@@ -19,3 +19,5 @@ frontend-modules/*/src/api/
 
 # Local Docker overrides
 compose.override.yaml
+
+*.tsbuildinfo
