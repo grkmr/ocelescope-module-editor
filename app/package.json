@@ -11,8 +11,11 @@
 	},
 	"dependencies": {
 		"@ocelescope/core": "catalog:",
+		"@ocelescope/filter": "catalog:",
+		"@ocelescope/log-overview": "catalog:",
 		"@ocelescope/management": "catalog:",
 		"@ocelescope/ocel-editor": "workspace:*",
+		"@ocelescope/ocelot": "catalog:",
 		"next": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:"
