@@ -55,7 +55,7 @@ class Resources:
                 )
             self._tables[id, table] = step.load(
                 f"resource_{table}",
-                getattr(self._resources[id], table).fetch_record_batch(BATCH_SIZE),
+                getattr(self._resources[id], table).to_arrow_reader(BATCH_SIZE),
             )
         return self._tables[id, table]
 

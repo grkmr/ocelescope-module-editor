@@ -1,6 +1,7 @@
 from abc import ABC
 from typing import Annotated, ClassVar, Literal, NamedTuple
 
+from ocelescope import OCELMapping
 from ocelescope.ocel.constants import (
     ACTIVITY_COL,
     E2O_QUALIFIER,
@@ -30,14 +31,13 @@ from ocelescope_module_ocel_editor.models.edit.selection import (
     Selection,
     selection_condition,
 )
-from ocelescope_module_ocel_editor.resources import OcelMask
 
 
-class MaskRelations(BaseResponse):
-    """The relations an ``OcelMask`` lists."""
+class MappingRelations(BaseResponse):
+    """The relations an ``OCELMapping`` lists."""
 
-    kind: Literal["mask"]
-    mask_id: str
+    kind: Literal["mapping"]
+    mapping_id: str
 
 
 class RelationPairs(BaseResponse):
@@ -48,7 +48,7 @@ class RelationPairs(BaseResponse):
     targets: Selection
 
 
-Relations = Annotated[MaskRelations | RelationPairs, Field(discriminator="kind")]
+Relations = Annotated[MappingRelations | RelationPairs, Field(discriminator="kind")]
 
 
 class _Entities(NamedTuple):
@@ -80,19 +80,21 @@ class _AddRelations(EditorActionBase, ABC):
 
     relations: Relations
     qualifier: str = Field(min_length=1)
-    """The qualifier of the new relations; a mask's own take precedence over it."""
+    """The qualifier of the new relations; a mapping's own take precedence over it."""
 
     def _candidates(self, step: Step, resources: Resources) -> str:
         """The relations to add, under the columns of the table."""
         source, target = ident(self.source_column), ident(self.target_column)
         qualifier = ident(self.qualifier_column)
 
-        if isinstance(self.relations, MaskRelations):
-            mask = resources.table(step, self.relations.mask_id, OcelMask, self.table)
+        if isinstance(self.relations, MappingRelations):
+            mapping = resources.table(
+                step, self.relations.mapping_id, OCELMapping, self.table
+            )
             return (
                 f"SELECT {source}, {target}, "
                 f"COALESCE({qualifier}, {literal(self.qualifier)}) AS {qualifier} "
-                f"FROM {mask}"
+                f"FROM {mapping}"
             )
 
         sources = self._selected(

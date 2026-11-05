@@ -18,20 +18,20 @@ import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 import type {
 	IdSelection,
-	MaskSelection,
+	MappingSelection,
 	TypeSelection,
 } from "../api/ocelEditor";
-import { MaskName, MaskSelect } from "./MaskSelect";
+import { MappingName, MappingSelect } from "./MappingSelect";
 import { ModeMenu } from "./ModeMenu";
 
-export type Selection = TypeSelection | IdSelection | MaskSelection;
+export type Selection = TypeSelection | IdSelection | MappingSelection;
 
 export const selections: {
 	[K in Selection["kind"]]: Extract<Selection, { kind: K }>;
 } = {
 	types: { kind: "types", names: [] },
 	ids: { kind: "ids", ids: [] },
-	mask: { kind: "mask", maskId: "" },
+	mapping: { kind: "mapping", mappingId: "" },
 };
 
 const PICKER_CLASS = "ocelescope-editor-type-picker";
@@ -59,12 +59,16 @@ export const SelectionName = ({
 	if (selection.kind === "ids") {
 		return <>{`${selection.ids.length} ids`}</>;
 	}
-	return selection.maskId ? <MaskName id={selection.maskId} /> : <>mask</>;
+	return selection.mappingId ? (
+		<MappingName id={selection.mappingId} />
+	) : (
+		<>mapping</>
+	);
 };
 
 export const selectionProblem = (selection: Selection, type: string) => {
-	if (selection.kind === "mask") {
-		return selection.maskId ? undefined : "Pick a mask";
+	if (selection.kind === "mapping") {
+		return selection.mappingId ? undefined : "Pick an OCEL mapping";
 	}
 	if (selection.kind === "ids") {
 		return selection.ids.length > 0 ? undefined : "Pick at least one id";
@@ -94,8 +98,8 @@ export const SelectionInput = ({
 	const entities = entityType === "object" ? "Objects" : "Events";
 	const label =
 		title ??
-		(value.kind === "mask"
-			? `${entities} of mask`
+		(value.kind === "mapping"
+			? `${entities} of mapping`
 			: value.kind === "ids"
 				? entities
 				: entityType === "object"
@@ -150,7 +154,7 @@ export const SelectionInput = ({
 							value: "ids",
 							label: entityType === "object" ? "Object ids" : "Event ids",
 						},
-						{ value: "mask", label: "OCEL mask" },
+						{ value: "mapping", label: "OCEL mapping" },
 					]}
 				/>
 			</Group>
@@ -175,10 +179,10 @@ export const SelectionInput = ({
 					onChange={(ids) => onChange({ ...value, ids })}
 				/>
 			) : (
-				<MaskSelect
+				<MappingSelect
 					label={undefined}
-					value={value.maskId}
-					onChange={(maskId) => onChange({ ...value, maskId })}
+					value={value.mappingId}
+					onChange={(mappingId) => onChange({ ...value, mappingId })}
 				/>
 			)}
 		</Stack>

@@ -5,7 +5,7 @@ import type {
 	ActionPanel,
 	EditActionOf,
 } from "../../types/edit";
-import { MaskName, MaskSelect } from "../MaskSelect";
+import { MappingName, MappingSelect } from "../MappingSelect";
 import {
 	SelectionInput,
 	SelectionName,
@@ -30,7 +30,7 @@ const relationsOf: {
 		sources: selections.types,
 		targets: selections.types,
 	},
-	mask: { kind: "mask", maskId: "" },
+	mapping: { kind: "mapping", mappingId: "" },
 };
 
 const AddRelationsPanel: ActionPanel<AddType> = ({
@@ -55,14 +55,14 @@ const AddRelationsPanel: ActionPanel<AddType> = ({
 				}
 				data={[
 					{ value: "pairs", label: "Between entities" },
-					{ value: "mask", label: "From a mask" },
+					{ value: "mapping", label: "From an OCEL mapping" },
 				]}
 			/>
-			{relations.kind === "mask" ? (
-				<MaskSelect
-					value={relations.maskId}
-					onChange={(maskId) =>
-						onChange({ ...step, relations: { ...relations, maskId } })
+			{relations.kind === "mapping" ? (
+				<MappingSelect
+					value={relations.mappingId}
+					onChange={(mappingId) =>
+						onChange({ ...step, relations: { ...relations, mappingId } })
 					}
 				/>
 			) : (
@@ -94,8 +94,8 @@ const AddRelationsPanel: ActionPanel<AddType> = ({
 				radius={0}
 				label="Qualifier"
 				description={
-					relations.kind === "mask"
-						? "For the relations the mask lists without one"
+					relations.kind === "mapping"
+						? "For the relations the mapping lists without one"
 						: undefined
 				}
 				value={qualifier}
@@ -126,11 +126,11 @@ const addRelations = <T extends AddType>({
 			({ type, relations: relationsOf.pairs, qualifier: "" }) as AddAction,
 		summary: ({ relations, qualifier }) => (
 			<>
-				{relations.kind === "mask" ? (
-					relations.maskId ? (
-						<MaskName id={relations.maskId} />
+				{relations.kind === "mapping" ? (
+					relations.mappingId ? (
+						<MappingName id={relations.mappingId} />
 					) : (
-						"mask"
+						"mapping"
 					)
 				) : (
 					<>
@@ -144,8 +144,8 @@ const addRelations = <T extends AddType>({
 		),
 		validate: ({ relations, qualifier }): ActionErrors<AddType> => {
 			const problem =
-				relations.kind === "mask"
-					? !relations.maskId && "Pick a mask"
+				relations.kind === "mapping"
+					? !relations.mappingId && "Pick an OCEL mapping"
 					: (selectionProblem(relations.sources, source.one) ??
 						selectionProblem(relations.targets, "object type"));
 			return {
@@ -161,7 +161,7 @@ export const AddE2O = addRelations({
 	type: "add-e2o",
 	title: "Add E2O Relations",
 	description:
-		"Relates events to objects: every source event to every target object, or the E2O relations a mask lists. Relations the log already has, and ids it does not have, are left out.",
+		"Relates events to objects: every source event to every target object, or the E2O relations an OCEL mapping lists. Relations the log already has, and ids it does not have, are left out.",
 	source: { one: "activity", many: "activities" },
 });
 
@@ -169,6 +169,6 @@ export const AddO2O = addRelations({
 	type: "add-o2o",
 	title: "Add O2O Relations",
 	description:
-		"Relates objects to objects: every source object to every other target object, or the O2O relations a mask lists. Relations the log already has, and ids it does not have, are left out.",
+		"Relates objects to objects: every source object to every other target object, or the O2O relations an OCEL mapping lists. Relations the log already has, and ids it does not have, are left out.",
 	source: { one: "object type", many: "object types" },
 });

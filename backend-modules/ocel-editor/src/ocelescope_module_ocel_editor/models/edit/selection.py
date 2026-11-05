@@ -1,12 +1,12 @@
 from typing import Annotated, Literal
 
+from ocelescope import OCELMapping
 from ocelescope.ocel.view import Step
 from ocelescope.util.sql import ident, in_list
 from pydantic import Field
 
 from ocelescope_module_ocel_editor.models.base import BaseResponse
 from ocelescope_module_ocel_editor.models.edit.base import Resources
-from ocelescope_module_ocel_editor.resources import OcelMask
 
 
 class TypeSelection(BaseResponse):
@@ -23,22 +23,22 @@ class IdSelection(BaseResponse):
     ids: list[str] = Field(min_length=1)
 
 
-class MaskSelection(BaseResponse):
-    """Every entity an ``OcelMask`` lists."""
+class MappingSelection(BaseResponse):
+    """Every entity an ``OCELMapping`` lists."""
 
-    kind: Literal["mask"]
-    mask_id: str
+    kind: Literal["mapping"]
+    mapping_id: str
 
 
 Selection = Annotated[
-    TypeSelection | IdSelection | MaskSelection, Field(discriminator="kind")
+    TypeSelection | IdSelection | MappingSelection, Field(discriminator="kind")
 ]
 
 
 def selection_condition(
     step: Step,
     resources: Resources,
-    selection: TypeSelection | IdSelection | MaskSelection,
+    selection: TypeSelection | IdSelection | MappingSelection,
     table: str,
     key: str,
     type_column: str,
@@ -49,6 +49,6 @@ def selection_condition(
         return in_list(f"{alias}{ident(type_column)}", selection.names)
     if isinstance(selection, IdSelection):
         return in_list(f"{alias}{ident(key)}", selection.ids)
-    mask = resources.table(step, selection.mask_id, OcelMask, table)
+    mapping = resources.table(step, selection.mapping_id, OCELMapping, table)
     key = ident(key)
-    return f"{alias}{key} IN (SELECT {key} FROM {mask} WHERE {key} IS NOT NULL)"
+    return f"{alias}{key} IN (SELECT {key} FROM {mapping} WHERE {key} IS NOT NULL)"

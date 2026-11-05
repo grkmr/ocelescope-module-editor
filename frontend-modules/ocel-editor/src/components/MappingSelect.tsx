@@ -7,19 +7,16 @@ import {
 	type SelectProps,
 	Tooltip,
 } from "@mantine/core";
-import { useResources } from "@ocelescope/api-base";
+import { DefaultResource, useResources } from "@ocelescope/api-base";
 import { useInvalidate } from "@ocelescope/core";
 import { Upload } from "lucide-react";
-import { useUploadMask } from "../api/ocelEditor";
+import { useUploadMapping } from "../api/ocelEditor";
 import { apiError } from "../lib/apiError";
 
-const MASK_TYPE =
-	"55de364ec6b09b1c17c43044d63e61ef05fdac44afcd69c82b188070eb75e958";
-
 const CSV_HELP =
-	"Upload a CSV of one of the mask's tables as a new mask: ocel:oid for objects, ocel:eid for events, both for E2O relations, or ocel:oid_1 and ocel:oid_2 for O2O relations (ocel:qualifier optional).";
+	"Upload a CSV of one of the mapping's tables as a new OCEL mapping: ocel:oid for objects, ocel:eid for events, both for E2O relations, or ocel:oid_1 and ocel:oid_2 for O2O relations (ocel:qualifier optional, further columns are kept).";
 
-export const MaskSelect = ({
+export const MappingSelect = ({
 	value,
 	onChange,
 	error,
@@ -28,9 +25,11 @@ export const MaskSelect = ({
 	value: string;
 	onChange: (value: string) => void;
 }) => {
-	const { data: masks = [] } = useResources({ schema_hash: MASK_TYPE });
+	const { data: mappings = [] } = useResources({
+		schema_hash: DefaultResource.OCELMapping,
+	});
 	const invalidate = useInvalidate();
-	const upload = useUploadMask({
+	const upload = useUploadMapping({
 		mutation: {
 			onSuccess: async (id) => {
 				await invalidate(["resources"]);
@@ -41,13 +40,13 @@ export const MaskSelect = ({
 
 	return (
 		<Select
-			label="Mask"
+			label="OCEL mapping"
 			placeholder="Search…"
 			searchable
 			radius={0}
-			nothingFoundMessage="No masks in this session"
+			nothingFoundMessage="No OCEL mappings in this session"
 			{...props}
-			data={masks.map(({ id, name }) => ({ value: id, label: name }))}
+			data={mappings.map(({ id, name }) => ({ value: id, label: name }))}
 			value={value || null}
 			onChange={(value) => onChange(value ?? "")}
 			error={
@@ -70,7 +69,7 @@ export const MaskSelect = ({
 									{...props}
 									variant="subtle"
 									loading={upload.isPending}
-									aria-label="Upload a CSV as a mask"
+									aria-label="Upload a CSV as an OCEL mapping"
 								>
 									<Upload size={16} />
 								</ActionIcon>
@@ -83,7 +82,7 @@ export const MaskSelect = ({
 	);
 };
 
-export const MaskName = ({ id }: { id: string }) => {
-	const { data } = useResources({ schema_hash: MASK_TYPE });
-	return <>{data?.find((mask) => mask.id === id)?.name ?? "mask"}</>;
+export const MappingName = ({ id }: { id: string }) => {
+	const { data } = useResources({ schema_hash: DefaultResource.OCELMapping });
+	return <>{data?.find((mapping) => mapping.id === id)?.name ?? "mapping"}</>;
 };
