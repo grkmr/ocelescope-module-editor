@@ -1,6 +1,5 @@
 import { Divider, Group, Radio, Stack, TextInput } from "@mantine/core";
 import type { AttributeTypeNameMissing } from "../../api/ocelEditor";
-import { useView } from "../../hooks/useView";
 import type {
 	ActionErrors,
 	ActionKind,
@@ -9,7 +8,6 @@ import type {
 } from "../../types/edit";
 import { AttributeSelect } from "../AttributeSelect";
 import { ModeMenu } from "../ModeMenu";
-import { Previewed } from "../Previewed";
 import {
 	SelectionInput,
 	SelectionName,
@@ -33,125 +31,118 @@ const newNames: { [K in NewName["kind"]]: Extract<NewName, { kind: K }> } = {
 
 const TypeRenamePanel: ActionPanel<RenameType> = ({
 	ocelId,
-	action,
+	step,
 	onChange,
-	before,
+	viewId,
 }) => {
-	const view = useView(ocelId, before);
-	const { selection, newName } = action;
-	const entityType = entityTypes[action.type];
+	const { selection, newName } = step;
+	const entityType = entityTypes[step.type];
 	const entities = entityType === "object" ? "Objects" : "Events";
 
 	return (
-		<Previewed query={view}>
-			{(view) => (
-				<Stack gap="md">
-					<SelectionInput
-						ocelId={ocelId}
-						entityType={entityType}
-						view={view}
-						value={selection}
-						onChange={(selection) => onChange({ ...action, selection })}
+		<Stack gap="md">
+			<SelectionInput
+				ocelId={ocelId}
+				entityType={entityType}
+				viewId={viewId}
+				value={selection}
+				onChange={(selection) => onChange({ ...step, selection })}
+			/>
+			<Divider />
+			<Stack gap="xs">
+				<Group gap={4} align="flex-end" wrap="nowrap">
+					{newName.kind === "static" ? (
+						<TextInput
+							flex={1}
+							miw={0}
+							radius={0}
+							label="New name"
+							value={newName.name}
+							onChange={(e) =>
+								onChange({
+									...step,
+									newName: { ...newName, name: e.currentTarget.value },
+								})
+							}
+						/>
+					) : (
+						<AttributeSelect
+							flex={1}
+							miw={0}
+							ocelId={ocelId}
+							entityType={entityType}
+							types={selection.kind === "types" ? selection.names : []}
+							viewId={viewId}
+							value={newName.attribute}
+							onChange={(attribute) =>
+								onChange({ ...step, newName: { ...newName, attribute } })
+							}
+						/>
+					)}
+					<ModeMenu
+						label="Name by"
+						value={newName.kind}
+						onChange={(kind) => onChange({ ...step, newName: newNames[kind] })}
+						options={[
+							{ value: "static", label: "Fixed name" },
+							{ value: "attribute", label: "Attribute value" },
+						]}
 					/>
-					<Divider />
-					<Stack gap="xs">
-						<Group gap={4} align="flex-end" wrap="nowrap">
-							{newName.kind === "static" ? (
-								<TextInput
-									flex={1}
-									miw={0}
-									radius={0}
-									label="New name"
-									value={newName.name}
-									onChange={(e) =>
-										onChange({
-											...action,
-											newName: { ...newName, name: e.currentTarget.value },
-										})
-									}
-								/>
-							) : (
-								<AttributeSelect
-									flex={1}
-									miw={0}
-									ocelId={ocelId}
-									entityType={entityType}
-									types={selection.kind === "types" ? selection.names : []}
-									view={view}
-									value={newName.attribute}
-									onChange={(attribute) =>
-										onChange({ ...action, newName: { ...newName, attribute } })
-									}
-								/>
-							)}
-							<ModeMenu
-								label="Name by"
-								value={newName.kind}
-								onChange={(kind) =>
-									onChange({ ...action, newName: newNames[kind] })
-								}
-								options={[
-									{ value: "static", label: "Fixed name" },
-									{ value: "attribute", label: "Attribute value" },
-								]}
+				</Group>
+				{newName.kind === "attribute" && (
+					<Radio.Group
+						label={`${entities} without an attribute value`}
+						value={newName.missing ?? "keep"}
+						onChange={(missing) =>
+							onChange({
+								...step,
+								newName: {
+									...newName,
+									missing: missing as AttributeTypeNameMissing,
+								},
+							})
+						}
+					>
+						<Group mt="xs" gap="xl" align="flex-start" wrap="nowrap">
+							<Radio
+								value="keep"
+								label="Keep type"
+								description="They are not renamed"
 							/>
-						</Group>
-						{newName.kind === "attribute" && (
-							<Radio.Group
-								label={`${entities} without an attribute value`}
-								value={newName.missing ?? "keep"}
-								onChange={(missing) =>
-									onChange({
-										...action,
-										newName: {
-											...newName,
-											missing: missing as AttributeTypeNameMissing,
-										},
-									})
-								}
-							>
-								<Group mt="xs" gap="xl" align="flex-start" wrap="nowrap">
-									<Radio
-										value="keep"
-										label="Keep type"
-										description="They are not renamed"
-									/>
-									<Radio
-										value="drop"
-										label="Drop"
-										description="Along with their relations"
-									/>
-									<Radio
-										value="fallback"
-										flex={1}
-										miw={0}
-										styles={{ labelWrapper: { flex: 1 } }}
-										label={
-											<TextInput
-												size="xs"
-												radius={0}
-												placeholder="Fallback name"
-												value={newName.fallbackName ?? ""}
-												onChange={(e) =>
-													onChange({
-														...action,
-														newName: {
-															...newName,
-															missing: "fallback",
-															fallbackName: e.currentTarget.value,
-														},
-													})
-												}
-											/>
+							<Radio
+								value="drop"
+								label="Drop"
+								description="Along with their relations"
+							/>
+							<Radio
+								value="fallback"
+								flex={1}
+								miw={0}
+								styles={{ labelWrapper: { flex: 1 } }}
+								label={
+									<TextInput
+										size="xs"
+										radius={0}
+										placeholder="Fallback name"
+										value={newName.fallbackName ?? ""}
+										onChange={(e) =>
+											onChange({
+												...step,
+												newName: {
+													...newName,
+													missing: "fallback",
+													fallbackName: e.currentTarget.value,
+												},
+											})
 										}
 									/>
-								</Group>
-							</Radio.Group>
-						)}
-					</Stack>
-				</Stack>
-			)}
-		</Previewed>
+								}
+							/>
+						</Group>
+					</Radio.Group>
+				)}
+			</Stack>
+		</Stack>
 	);
 };
 

@@ -2,7 +2,7 @@
 	"name": "@ocelescope/ocel-editor",
 	"version": "0.11.0",
 	"description": "A module for creating new OCELs from OCELs",
-	"author": "Görkem-Emre Öztürk",
+	"author": "G\u00f6rkem-Emre \u00d6zt\u00fcrk",
 	"private": true,
 	"type": "module",
 	"exports": {
@@ -23,6 +23,7 @@
 	"peerDependencies": {
 		"@mantine/core": "catalog:",
 		"@mantine/hooks": "catalog:",
+		"@mantine/notifications": "catalog:",
 		"@ocelescope/api-base": "catalog:",
 		"@ocelescope/api-client": "catalog:",
 		"@ocelescope/core": "catalog:",
@@ -35,6 +36,7 @@
 	},
 	"devDependencies": {
 		"@mantine/hooks": "catalog:",
+		"@mantine/notifications": "catalog:",
 		"@ocelescope/api-base": "catalog:",
 		"@ocelescope/api-client": "catalog:",
 		"@ocelescope/api-config": "catalog:",
@@ -48,11 +50,5 @@
 		"react": "catalog:",
 		"tsdown": "catalog:",
 		"typescript": "catalog:"
-	},
-	"dependencies": {
-		"@dnd-kit/core": "catalog:",
-		"@dnd-kit/sortable": "catalog:",
-		"@dnd-kit/utilities": "catalog:",
-		"react-hook-form": "catalog:"
 	}
 }

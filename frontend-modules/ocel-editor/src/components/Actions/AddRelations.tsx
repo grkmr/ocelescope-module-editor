@@ -1,5 +1,4 @@
 import { Divider, SegmentedControl, Stack, TextInput } from "@mantine/core";
-import { useView } from "../../hooks/useView";
 import type {
 	ActionErrors,
 	ActionKind,
@@ -7,7 +6,6 @@ import type {
 	EditActionOf,
 } from "../../types/edit";
 import { MaskName, MaskSelect } from "../MaskSelect";
-import { Previewed } from "../Previewed";
 import {
 	SelectionInput,
 	SelectionName,
@@ -37,82 +35,75 @@ const relationsOf: {
 
 const AddRelationsPanel: ActionPanel<AddType> = ({
 	ocelId,
-	action,
+	step,
 	onChange,
-	before,
+	viewId,
 }) => {
-	const view = useView(ocelId, before);
-	const { relations, qualifier } = action;
-	const sourceType = sourceTypes[action.type];
+	const { relations, qualifier } = step;
+	const sourceType = sourceTypes[step.type];
 
 	return (
-		<Previewed query={view}>
-			{(view) => (
-				<Stack gap="md">
-					<SegmentedControl
-						radius={0}
-						value={relations.kind}
-						onChange={(kind) =>
-							onChange({
-								...action,
-								relations: relationsOf[kind as Relations["kind"]],
-							})
-						}
-						data={[
-							{ value: "pairs", label: "Between entities" },
-							{ value: "mask", label: "From a mask" },
-						]}
-					/>
-					{relations.kind === "mask" ? (
-						<MaskSelect
-							value={relations.maskId}
-							onChange={(maskId) =>
-								onChange({ ...action, relations: { ...relations, maskId } })
-							}
-						/>
-					) : (
-						<>
-							<SelectionInput
-								ocelId={ocelId}
-								entityType={sourceType}
-								title={
-									sourceType === "event" ? "Source events" : "Source objects"
-								}
-								view={view}
-								value={relations.sources}
-								onChange={(sources) =>
-									onChange({ ...action, relations: { ...relations, sources } })
-								}
-							/>
-							<Divider />
-							<SelectionInput
-								ocelId={ocelId}
-								entityType="object"
-								title="Target objects"
-								view={view}
-								value={relations.targets}
-								onChange={(targets) =>
-									onChange({ ...action, relations: { ...relations, targets } })
-								}
-							/>
-						</>
-					)}
-					<TextInput
-						radius={0}
-						label="Qualifier"
-						description={
-							relations.kind === "mask"
-								? "For the relations the mask lists without one"
-								: undefined
-						}
-						value={qualifier}
-						onChange={(e) =>
-							onChange({ ...action, qualifier: e.currentTarget.value })
+		<Stack gap="md">
+			<SegmentedControl
+				radius={0}
+				value={relations.kind}
+				onChange={(kind) =>
+					onChange({
+						...step,
+						relations: relationsOf[kind as Relations["kind"]],
+					})
+				}
+				data={[
+					{ value: "pairs", label: "Between entities" },
+					{ value: "mask", label: "From a mask" },
+				]}
+			/>
+			{relations.kind === "mask" ? (
+				<MaskSelect
+					value={relations.maskId}
+					onChange={(maskId) =>
+						onChange({ ...step, relations: { ...relations, maskId } })
+					}
+				/>
+			) : (
+				<>
+					<SelectionInput
+						ocelId={ocelId}
+						entityType={sourceType}
+						title={sourceType === "event" ? "Source events" : "Source objects"}
+						viewId={viewId}
+						value={relations.sources}
+						onChange={(sources) =>
+							onChange({ ...step, relations: { ...relations, sources } })
 						}
 					/>
-				</Stack>
+					<Divider />
+					<SelectionInput
+						ocelId={ocelId}
+						entityType="object"
+						title="Target objects"
+						viewId={viewId}
+						value={relations.targets}
+						onChange={(targets) =>
+							onChange({ ...step, relations: { ...relations, targets } })
+						}
+					/>
+				</>
 			)}
-		</Previewed>
+			<TextInput
+				radius={0}
+				label="Qualifier"
+				description={
+					relations.kind === "mask"
+						? "For the relations the mask lists without one"
+						: undefined
+				}
+				value={qualifier}
+				onChange={(e) =>
+					onChange({ ...step, qualifier: e.currentTarget.value })
+				}
+			/>
+		</Stack>
 	);
 };
 

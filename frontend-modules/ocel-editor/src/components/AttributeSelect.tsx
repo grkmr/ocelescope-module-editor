@@ -1,14 +1,14 @@
 import { Select, type SelectProps } from "@mantine/core";
+import { viewParams } from "@ocelescope/core";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useAttributes } from "../api/ocelEditor";
-import type { ViewParams } from "../hooks/useView";
 
-/** An attribute that entities of `types` carry in `view`, or any entity's. */
+/** An attribute that entities of `types` carry in the view `viewId`, or any entity's. */
 export const AttributeSelect = ({
 	ocelId,
 	entityType,
 	types = [],
-	view,
+	viewId,
 	value,
 	onChange,
 	...props
@@ -16,13 +16,13 @@ export const AttributeSelect = ({
 	ocelId: string;
 	entityType: "object" | "event";
 	types?: string[];
-	view: ViewParams;
+	viewId: string | null;
 	value: string;
 	onChange: (value: string) => void;
 }) => {
 	const { data, isPending } = useAttributes(
 		ocelId,
-		{ entity_type: entityType, types, ...view },
+		{ entity_type: entityType, types, ...viewParams(viewId) },
 		{ query: { placeholderData: keepPreviousData } },
 	);
 

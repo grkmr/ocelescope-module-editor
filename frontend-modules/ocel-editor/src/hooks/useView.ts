@@ -1,16 +1,15 @@
+import { notifications } from "@mantine/notifications";
+import type { UseView } from "@ocelescope/core";
 import { keepPreviousData } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { useRegisterView } from "../api/ocelEditor";
+import { apiError } from "../lib/apiError";
 import type { EditAction } from "../types/edit";
 
-export type ViewParams = { view_id: string } | { ocel_version: "original" };
-
-const ORIGINAL: ViewParams = { ocel_version: "original" };
-
-export const useView = (
-	ocelId: string,
-	steps: EditAction[],
-): { data?: ViewParams; isPending: boolean; error: unknown } => {
-	const { data, isPending, error } = useRegisterView(ocelId, steps, {
+/** The view of the log as `steps` leave it: `null` for the original log,
+ * `undefined` while it is being registered or could not be. */
+export const useView: UseView<EditAction> = (ocelId, steps) => {
+	const { data, error } = useRegisterView(ocelId, steps, {
 		query: {
 			enabled: steps.length > 0,
 			placeholderData: keepPreviousData,
@@ -18,17 +17,17 @@ export const useView = (
 			retry: false,
 		},
 	});
-	if (steps.length === 0 || data === null) {
-		return { data: ORIGINAL, isPending: false, error: null };
-	}
-	return {
-		data: data === undefined ? undefined : { view_id: data },
-		isPending,
-		error,
-	};
-};
 
-export const viewProps = (view: ViewParams) =>
-	"view_id" in view
-		? { viewId: view.view_id }
-		: { ocelVersion: "original" as const };
+	useEffect(() => {
+		if (error) {
+			notifications.show({
+				id: "ocel-editor-view",
+				color: "red",
+				title: "Could not load the log as the steps before leave it",
+				message: apiError(error, "The backend refused the pipeline."),
+			});
+		}
+	}, [error]);
+
+	return steps.length === 0 ? null : data;
+};

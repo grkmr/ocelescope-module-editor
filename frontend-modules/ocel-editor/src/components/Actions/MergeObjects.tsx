@@ -11,12 +11,10 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useObjectCounts } from "@ocelescope/api-base";
-import { ObjectPicker } from "@ocelescope/core";
+import { ObjectPicker, viewParams } from "@ocelescope/core";
 import { PlusIcon, XIcon } from "lucide-react";
 import type { ObjectMerge } from "../../api/ocelEditor";
-import { useView, type ViewParams } from "../../hooks/useView";
 import type { ActionKind, ActionPanel } from "../../types/edit";
-import { Previewed } from "../Previewed";
 import {
 	SelectionInput,
 	SelectionName,
@@ -32,14 +30,14 @@ const newMerge: ObjectMerge = {
 
 const MergeInput = ({
 	ocelId,
-	view,
+	viewId,
 	types,
 	merge,
 	onChange,
 	onRemove,
 }: {
 	ocelId: string;
-	view: ViewParams;
+	viewId: string | null;
 	types: string[];
 	merge: ObjectMerge;
 	onChange: (merge: ObjectMerge) => void;
@@ -82,7 +80,7 @@ const MergeInput = ({
 				ocelId={ocelId}
 				entityType="object"
 				title="Objects to merge"
-				view={view}
+				viewId={viewId}
 				value={merge.objects}
 				onChange={(objects) => onChange({ ...merge, objects })}
 			/>
@@ -113,119 +111,109 @@ const MergeInput = ({
 
 const MergeObjectsPanel: ActionPanel<"merge-objects"> = ({
 	ocelId,
-	action,
+	step,
 	onChange,
-	before,
+	viewId,
 }) => {
-	const view = useView(ocelId, before);
-	const { merges, qualifier, objectRelations } = action;
-	const { data: counts } = useObjectCounts(ocelId, view.data ?? {}, {
-		query: { enabled: view.data !== undefined },
-	});
+	const { merges, qualifier, objectRelations } = step;
+	const { data: counts } = useObjectCounts(ocelId, viewParams(viewId));
 	const types = Object.keys(counts ?? {}).sort((a, b) => a.localeCompare(b));
 
-	const setMerges = (merges: ObjectMerge[]) => onChange({ ...action, merges });
+	const setMerges = (merges: ObjectMerge[]) => onChange({ ...step, merges });
 
 	return (
-		<Previewed query={view}>
-			{(view) => (
-				<Stack gap="md">
-					{merges.map((merge, index) => (
-						<MergeInput
-							key={index}
-							ocelId={ocelId}
-							view={view}
-							types={types}
-							merge={merge}
-							onChange={(merge) =>
-								setMerges(merges.map((m, i) => (i === index ? merge : m)))
-							}
-							onRemove={
-								merges.length > 1
-									? () => setMerges(merges.filter((_, i) => i !== index))
-									: undefined
-							}
-						/>
-					))}
-					<Button
-						variant="light"
-						radius={0}
-						leftSection={<PlusIcon size={16} />}
-						onClick={() => setMerges([...merges, newMerge])}
-					>
-						Add merge
-					</Button>
-					<Radio.Group
-						label="Qualifier of the new event relations"
-						value={qualifier.kind}
-						onChange={(kind) =>
-							onChange({
-								...action,
-								qualifier:
-									kind === "fixed"
-										? { kind: "fixed", name: "" }
-										: { kind: "keep" },
-							})
-						}
-					>
-						<Group mt="xs" gap="xl" align="flex-start" wrap="nowrap">
-							<Radio
-								value="keep"
-								label="Keep the originals"
-								description="One relation per qualifier the merged objects had"
-							/>
-							<Radio
-								value="fixed"
-								flex={1}
-								miw={0}
-								styles={{ labelWrapper: { flex: 1 } }}
-								label={
-									<TextInput
-										size="xs"
-										radius={0}
-										placeholder="One qualifier for all"
-										value={qualifier.kind === "fixed" ? qualifier.name : ""}
-										onChange={(e) =>
-											onChange({
-												...action,
-												qualifier: {
-													kind: "fixed",
-													name: e.currentTarget.value,
-												},
-											})
-										}
-									/>
+		<Stack gap="md">
+			{merges.map((merge, index) => (
+				<MergeInput
+					key={index}
+					ocelId={ocelId}
+					viewId={viewId}
+					types={types}
+					merge={merge}
+					onChange={(merge) =>
+						setMerges(merges.map((m, i) => (i === index ? merge : m)))
+					}
+					onRemove={
+						merges.length > 1
+							? () => setMerges(merges.filter((_, i) => i !== index))
+							: undefined
+					}
+				/>
+			))}
+			<Button
+				variant="light"
+				radius={0}
+				leftSection={<PlusIcon size={16} />}
+				onClick={() => setMerges([...merges, newMerge])}
+			>
+				Add merge
+			</Button>
+			<Radio.Group
+				label="Qualifier of the new event relations"
+				value={qualifier.kind}
+				onChange={(kind) =>
+					onChange({
+						...step,
+						qualifier:
+							kind === "fixed" ? { kind: "fixed", name: "" } : { kind: "keep" },
+					})
+				}
+			>
+				<Group mt="xs" gap="xl" align="flex-start" wrap="nowrap">
+					<Radio
+						value="keep"
+						label="Keep the originals"
+						description="One relation per qualifier the merged objects had"
+					/>
+					<Radio
+						value="fixed"
+						flex={1}
+						miw={0}
+						styles={{ labelWrapper: { flex: 1 } }}
+						label={
+							<TextInput
+								size="xs"
+								radius={0}
+								placeholder="One qualifier for all"
+								value={qualifier.kind === "fixed" ? qualifier.name : ""}
+								onChange={(e) =>
+									onChange({
+										...step,
+										qualifier: {
+											kind: "fixed",
+											name: e.currentTarget.value,
+										},
+									})
 								}
 							/>
-						</Group>
-					</Radio.Group>
-					<Radio.Group
-						label="O2O relations of the merged objects"
-						value={objectRelations}
-						onChange={(objectRelations) =>
-							onChange({
-								...action,
-								objectRelations:
-									objectRelations as typeof action.objectRelations,
-							})
 						}
-					>
-						<Group mt="xs" gap="xl" align="flex-start" wrap="nowrap">
-							<Radio
-								value="move"
-								label="Move to the new object"
-								description="Those between objects of one merge are dropped"
-							/>
-							<Radio
-								value="drop"
-								label="Drop"
-								description="They go with the merged objects"
-							/>
-						</Group>
-					</Radio.Group>
-				</Stack>
-			)}
-		</Previewed>
+					/>
+				</Group>
+			</Radio.Group>
+			<Radio.Group
+				label="O2O relations of the merged objects"
+				value={objectRelations}
+				onChange={(objectRelations) =>
+					onChange({
+						...step,
+						objectRelations: objectRelations as typeof step.objectRelations,
+					})
+				}
+			>
+				<Group mt="xs" gap="xl" align="flex-start" wrap="nowrap">
+					<Radio
+						value="move"
+						label="Move to the new object"
+						description="Those between objects of one merge are dropped"
+					/>
+					<Radio
+						value="drop"
+						label="Drop"
+						description="They go with the merged objects"
+					/>
+				</Group>
+			</Radio.Group>
+		</Stack>
 	);
 };
 

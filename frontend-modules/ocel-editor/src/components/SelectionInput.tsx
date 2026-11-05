@@ -12,6 +12,7 @@ import {
 	EventPicker,
 	ObjectPicker,
 	ObjectTypePicker,
+	viewProps,
 } from "@ocelescope/core";
 import { ChevronRight } from "lucide-react";
 import { useState } from "react";
@@ -20,7 +21,6 @@ import type {
 	MaskSelection,
 	TypeSelection,
 } from "../api/ocelEditor";
-import { type ViewParams, viewProps } from "../hooks/useView";
 import { MaskName, MaskSelect } from "./MaskSelect";
 import { ModeMenu } from "./ModeMenu";
 
@@ -76,7 +76,7 @@ export const SelectionInput = ({
 	ocelId,
 	entityType,
 	title,
-	view,
+	viewId,
 	value,
 	onChange,
 	...props
@@ -84,7 +84,7 @@ export const SelectionInput = ({
 	ocelId: string;
 	entityType: "object" | "event";
 	title?: string;
-	view: ViewParams;
+	viewId: string | null;
 	value: Selection;
 	onChange: (value: Selection) => void;
 }) => {
@@ -161,7 +161,7 @@ export const SelectionInput = ({
 						multiple
 						cutoff
 						ocelId={ocelId}
-						{...viewProps(view)}
+						{...viewProps(viewId)}
 						value={value.names}
 						onChange={(names) => onChange({ ...value, names })}
 					/>

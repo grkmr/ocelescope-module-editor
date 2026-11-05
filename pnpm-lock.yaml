@@ -7,7 +7,7 @@ importers:
     configDependencies:
       '@ocelescope/pnpm-plugin-catalog':
         specifier: latest
-        version: 0.11.0
+        version: 0.12.0
     packageManagerDependencies:
       pnpm:
         specifier: 12.14.0
@@ -15,8 +15,8 @@ importers:
 
 packages:
 
-  '@ocelescope/pnpm-plugin-catalog@0.11.0':
-    resolution: {integrity: sha512-3F/4Oh9FA/Wi77yLuSht+i+VXgNpY9ikh9oM+cu13Urv8wiVoTZYOwB8M5XO/w6PJFbDJE77GaBQ0oHoIr/DcA==}
+  '@ocelescope/pnpm-plugin-catalog@0.12.0':
+    resolution: {integrity: sha512-MVbIsuRFhtACROAPo6LidYUun9yV7lDJAwsZA3oyntAJdBWRt7ZxzDs/v64In9n49pXrYduR3ts2M/q4qkriCw==}
 
   '@pnpm/exe.android-arm64@12.14.0':
     resolution: {integrity: sha512-+iSh7x21C3A2hqc+Z0ZmbKTcn6YNlzrXM142PsnQH/dLj0DYxFzoBvc6XAnL/yfQ5nnH2ebBiRj/zVxr61fZbQ==}
@@ -102,7 +102,7 @@ packages:
 
 snapshots:
 
-  '@ocelescope/pnpm-plugin-catalog@0.11.0': {}
+  '@ocelescope/pnpm-plugin-catalog@0.12.0': {}
 
   '@pnpm/exe.android-arm64@12.14.0':
     optional: true
@@ -173,41 +173,35 @@ settings:
 catalogs:
   default:
     '@biomejs/biome':
-      specifier: 2.6.3
-      version: 2.6.3
-    '@dnd-kit/core':
-      specifier: ^6.3.1
-      version: 6.3.1
-    '@dnd-kit/sortable':
-      specifier: ^10.0.0
-      version: 10.0.0
-    '@dnd-kit/utilities':
-      specifier: ^3.2.2
-      version: 3.2.2
+      specifier: 2.6.4
+      version: 2.6.4
     '@mantine/core':
       specifier: ^9.7.4
       version: 9.7.4
     '@mantine/hooks':
       specifier: ^9.7.4
       version: 9.7.4
+    '@mantine/notifications':
+      specifier: ^9.7.4
+      version: 9.7.4
     '@ocelescope/api-base':
-      specifier: ^0.11.0
-      version: 0.11.0
+      specifier: ^0.12.0
+      version: 0.12.0
     '@ocelescope/api-client':
-      specifier: ^0.11.0
-      version: 0.11.0
+      specifier: ^0.12.0
+      version: 0.12.0
     '@ocelescope/api-config':
-      specifier: ^0.11.0
-      version: 0.11.0
+      specifier: ^0.12.0
+      version: 0.12.0
     '@ocelescope/core':
-      specifier: ^0.11.0
-      version: 0.11.0
+      specifier: ^0.12.0
+      version: 0.12.0
     '@ocelescope/management':
-      specifier: ^0.11.0
-      version: 0.11.0
+      specifier: ^0.12.0
+      version: 0.12.0
     '@ocelescope/resources':
-      specifier: ^0.11.0
-      version: 0.11.0
+      specifier: ^0.12.0
+      version: 0.12.0
     '@tanstack/react-query':
       specifier: ^5.105.0
       version: 5.105.0
@@ -238,9 +232,6 @@ catalogs:
     react-dom:
       specifier: ^19.3.1
       version: 19.3.1
-    react-hook-form:
-      specifier: ^7.91.0
-      version: 7.91.0
     tsdown:
       specifier: ^0.23.3
       version: 0.23.3
@@ -256,16 +247,16 @@ importers:
     devDependencies:
       '@biomejs/biome':
         specifier: 'catalog:'
-        version: 2.6.3
+        version: 2.6.4
 
   app:
     dependencies:
       '@ocelescope/core':
         specifier: 'catalog:'
-        version: 0.11.0(665a283ec5fd7c20605030b14f3f18e3)
+        version: 0.12.0(f925c5c67c35ca5ea4d3a6b1a9acc4b4)
       '@ocelescope/management':
         specifier: 'catalog:'
-        version: 0.11.0(d82f76345aa9ce7280c9bed7838c5486)
+        version: 0.12.0(aa446b9098a737efdd70d3821114d1c7)
       '@ocelescope/ocel-editor':
         specifier: workspace:*
         version: link:../frontend-modules/ocel-editor
@@ -294,43 +285,34 @@ importers:
 
   frontend-modules/ocel-editor:
     dependencies:
-      '@dnd-kit/core':
-        specifier: 'catalog:'
-        version: 6.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@dnd-kit/sortable':
-        specifier: 'catalog:'
-        version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)
-      '@dnd-kit/utilities':
-        specifier: 'catalog:'
-        version: 3.2.2(react@19.3.1)
       '@mantine/core':
         specifier: 'catalog:'
         version: 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react-dom:
         specifier: 'catalog:'
         version: 19.3.1(react@19.3.1)
-      react-hook-form:
-        specifier: 'catalog:'
-        version: 7.91.0(@types/react@19.3.0)(react@19.3.1)
     devDependencies:
       '@mantine/hooks':
         specifier: 'catalog:'
         version: 9.7.4(react@19.3.1)
+      '@mantine/notifications':
+        specifier: 'catalog:'
+        version: 9.7.4(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@ocelescope/api-base':
         specifier: 'catalog:'
-        version: 0.11.0(@ocelescope/api-client@0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        version: 0.12.0(@ocelescope/api-client@0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@ocelescope/api-client':
         specifier: 'catalog:'
-        version: 0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
+        version: 0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
       '@ocelescope/api-config':
         specifier: 'catalog:'
-        version: 0.11.0(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)(zod@4.6.7)
+        version: 0.12.0(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)(zod@4.6.7)
       '@ocelescope/core':
         specifier: 'catalog:'
-        version: 0.11.0(665a283ec5fd7c20605030b14f3f18e3)
+        version: 0.12.0(f925c5c67c35ca5ea4d3a6b1a9acc4b4)
       '@ocelescope/resources':
         specifier: 'catalog:'
-        version: 0.11.0(8f74cc4c00a6008cd2fcaf9063e6b4e9)
+        version: 0.12.0(3cbe1f6a468eae40d60c2d8f5eaffa32)
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.105.0(@types/react@19.3.0)(react@19.3.1)
@@ -362,71 +344,71 @@ packages:
     resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
-  '@biomejs/biome@2.6.3':
-    resolution: {integrity: sha512-va/0xPku7wnfzv+D8Zpdm5uKiGJWiV8neqoEPnRjvNQQwhl4tVXS4fETs4H0CCB2rGeqJ4cu9y4iOZOnOYKAUA==}
+  '@biomejs/biome@2.6.4':
+    resolution: {integrity: sha512-8sKKwaNW4ot22awZ3lBjwWLHnUFXgXnrBPYS2gNlBAXRbDC++7kqjK2H7dR/FgCDtPvO1xfKpgEhJkGxAKYkxA==}
     engines: {node: '>=14.21.3'}
     hasBin: true
 
-  '@biomejs/cli-android-arm64@2.6.3':
-    resolution: {integrity: sha512-5JD7QQDEHxdeEb4sftEHG+lsuUyu8Cob/hVLqRELbgGlFl68Rldv/PPi2k4dRjERZ/EItJ3O6Xmv8lqsEtUBiw==}
+  '@biomejs/cli-android-arm64@2.6.4':
+    resolution: {integrity: sha512-jwrwigP4tBcHxzuV8izioX/BOUhJL/4e2rNSOE5nCjBkVC018LQAQUGiH+CNkFYvLtQ1dcZo5/xXERmaAGc7JQ==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [android]
 
-  '@biomejs/cli-android-x64@2.6.3':
-    resolution: {integrity: sha512-70WOGKCgpT+Uqg6LFdTLqefV54/DypdZg+LnBQDO6AWvkgXO+9xhVClajQyDsIHYjnXMtI1pRO5sP+zMXlS/bw==}
+  '@biomejs/cli-android-x64@2.6.4':
+    resolution: {integrity: sha512-HdGInPJ4nZFwHxzvEtcp2nmSBtUyJrurmtIK43upFckuS3+ZqVM05HtsxQWnqGsuy/pxckIAjyKWlEKRlBXUyA==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [android]
 
-  '@biomejs/cli-darwin-arm64@2.6.3':
-    resolution: {integrity: sha512-ezf+XEKeyJ2yYlBhrzyEEHLvfRYrhtNKc6maLzR/WcAcBccb4RVDeFxsymjBve2LO0bpIMRUAiS90D4bUBRT0A==}
+  '@biomejs/cli-darwin-arm64@2.6.4':
+    resolution: {integrity: sha512-0VvcUz46wbg59Q4TZ59KkIjDJrxEyu4Eoe79+F4SChxoWe+W7AEyIp6F5r72C9+p6MsB6dIovnZt1D30lGM3XA==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [darwin]
 
-  '@biomejs/cli-darwin-x64@2.6.3':
-    resolution: {integrity: sha512-Lg2tFdg4elJo+7i707PpLMs6N1hATVt4kqDo6MD/q/VnPs8rsKReKXsz1TA5GNdfRVAQNJ5GRiyK2EwNptK+MA==}
+  '@biomejs/cli-darwin-x64@2.6.4':
+    resolution: {integrity: sha512-fxmvkF81srlS3DiMyfm+aG3J0eG+6/BjaxRyjy57KbLSafnq0PO+hHfVWmtH2ty0S7nm6yDXBRwySfFeaRJKRQ==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [darwin]
 
-  '@biomejs/cli-linux-arm64-musl@2.6.3':
-    resolution: {integrity: sha512-dYU70A89OFHzakQPE9VOPbE60JNcQt4mtxvUGQl+EgTkGtqCFxLD2RUn1SbiMu8Mu5xFscS1bfYDpoasaUrqNA==}
+  '@biomejs/cli-linux-arm64-musl@2.6.4':
+    resolution: {integrity: sha512-31ZaH/MHqPX+O+evRwRrCHQ8W5/9adY+/eMytGGWZnRx1T41QsWIF09+/WujynLBhWZUxNGS5CtsWLwgOFTAyg==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@biomejs/cli-linux-arm64@2.6.3':
-    resolution: {integrity: sha512-8Stcvq98n1gs9VyLKuaWrnsd8kbXE2nKDAHtuLHGSYdGyNWN5JIIm5a28xdnmgdKzKHmiDgYyATetkEv7+zGow==}
+  '@biomejs/cli-linux-arm64@2.6.4':
+    resolution: {integrity: sha512-6+bK1Y/evmIUiJr7auertuMbiaYVicJhqA1bZyL47lCMWugv8l0gFQCqvR/gN1vZMHYm+HwoTKgeMxdNFCoQTg==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@biomejs/cli-linux-x64-musl@2.6.3':
-    resolution: {integrity: sha512-j6eFjUcWSphmgVTbrobEMA0wdbfNHKrGi8hRsFkc17jeS1n7nHwFACxp6jWqe9sxQqyFAeyOgt2/1bOGVcbATA==}
+  '@biomejs/cli-linux-x64-musl@2.6.4':
+    resolution: {integrity: sha512-bomSa2XdQAGGj6Cwdm4M13qE+lN9+AOlW8KtI4hdyVyRRF/Z71qPAi95T4wtdZK0QpBbkTW8hgbZZCwPi4xzIw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@biomejs/cli-linux-x64@2.6.3':
-    resolution: {integrity: sha512-CShmx0bO6BngywT3minv8K1xsQX1ig1vsBqYTLnmDY3mBiDYHlaLRIsdHoM1pEU9dV3BN5a0uiH0IGDtYh9TWA==}
+  '@biomejs/cli-linux-x64@2.6.4':
+    resolution: {integrity: sha512-tbFZMdL6dP/ws4edXxYG9WhvaVa1ZDzL4G5DzahnWW7Psib9H+VTdyU4XXVxpJk5j/nYZroSbvSNyYlpW3yCIw==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@biomejs/cli-win32-arm64@2.6.3':
-    resolution: {integrity: sha512-00SthDxBPwNiT7IL/mOneif6fiEU1PXK875zhr+InpeZjovY1mF5tCuDhXo1Hh0GYyiKHKzLbItzn58SAyLhJQ==}
+  '@biomejs/cli-win32-arm64@2.6.4':
+    resolution: {integrity: sha512-eCsqt8Ma3eVap+oyJCDnJZH60SIU464B66n3y38EUTJdM1T/HfZol1FJC9vb+sHToX0ix8XzqPcwJnOzyAJz0g==}
     engines: {node: '>=14.21.3'}
     cpu: [arm64]
     os: [win32]
 
-  '@biomejs/cli-win32-x64@2.6.3':
-    resolution: {integrity: sha512-GhtOPphBWlnCepqpNk/w5eGN5oGRCzL20EbAkL1XCIpyboeVC9R642noyT43l8LSenGS4qz9IL8sKPfwY37V/Q==}
+  '@biomejs/cli-win32-x64@2.6.4':
+    resolution: {integrity: sha512-pYsMy5AThiHFOZAsngg8qN4PurM6nInKBhVX7sbj3eNpRQqo1Hb0MgCwPL7VqVMrmcEEMj9Ks3qbkallR65e8g==}
     engines: {node: '>=14.21.3'}
     cpu: [x64]
     os: [win32]
@@ -946,17 +928,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@ocelescope/api-base@0.11.0':
-    resolution: {integrity: sha512-AAhJiScZuNasEyNzKQQqOsUILkENwILHOmAlsNA2DTe2ZtnYPUZwhVJS+h5xX9tJ03adkkHrHoD/3QwUB+PiCA==}
+  '@ocelescope/api-base@0.12.0':
+    resolution: {integrity: sha512-OlQWBNvrmgQCVZMa8ImBPlS4srHZv6iK+94yCkEgin+zN66M2wSAY0UdwZtcezMBGs7YLgwjXVJC+oUfXxcwCA==}
     peerDependencies:
-      '@ocelescope/api-client': ^0.11.0
+      '@ocelescope/api-client': ^0.12.0
       '@tanstack/react-query': ^5.105.0
       axios: ^1.21.0
       react: ^19.3.1
       react-dom: ^19.3.1
 
-  '@ocelescope/api-client@0.11.0':
-    resolution: {integrity: sha512-rqcnAgYKZOk+UBsg+OhuuEGVw3VeYrcR/B8OTeLeC96gKRh7hsbd+peLDxrypcBNovxIiFWQqEEiir/E2wgPJw==}
+  '@ocelescope/api-client@0.12.0':
+    resolution: {integrity: sha512-LrI1OJ6v6IuwdUJfqQE8FunqMJznz7ThVjN/zSiMoaBrewhJgme2xnfGgG4FF5YCZ9xUbK2SW5DnX3MHKXo7iw==}
     peerDependencies:
       axios: ^1.21.0
       react: ^19.3.1
@@ -964,23 +946,26 @@ packages:
       zod: ^4.6.7
       zustand: ^5.0.16
 
-  '@ocelescope/api-config@0.11.0':
-    resolution: {integrity: sha512-GBf4DLAnfh6KTR9AQs/MVddQTUKmpBAP85cA3hHgPywHeHO5DivDGH5V3uHRGMf0xPiD/9/hEGtSZ8xctGDxxg==}
+  '@ocelescope/api-config@0.12.0':
+    resolution: {integrity: sha512-EKsGEuqkMOWVJ1ri40vXX7Z0m4FJP28iXz2D7E9ZV2et9etI0KVZuD/UtAm1ktyMmNtD/81mwyk4AjL1x1p/7A==}
     peerDependencies:
       react: ^19.3.1
       react-dom: ^19.3.1
 
-  '@ocelescope/core@0.11.0':
-    resolution: {integrity: sha512-DO9kPAyb8tTq2d0NPDD8zCZkjRQiS3xMwjyzQB7Tz8MNBwORIXY+zwyLtoJOCFp37UGC/qRC0QkYCs9QFSWpkw==}
+  '@ocelescope/core@0.12.0':
+    resolution: {integrity: sha512-Fwi+DWjzd0jYMQ3nYDMl2gT3M0nVCRl2YXbRAkXpWVoOIJfwAk1gkCYfFTBdu0ySVy9AOehA5e5BeZnKF9Rbxw==}
     peerDependencies:
+      '@dnd-kit/core': ^6.3.1
+      '@dnd-kit/sortable': ^10.0.0
+      '@dnd-kit/utilities': ^3.2.2
       '@mantine/core': ^9.7.4
       '@mantine/dropzone': ^9.7.4
       '@mantine/hooks': ^9.7.4
       '@mantine/notifications': ^9.7.4
       '@marko19907/string-to-color': ^1.0.2
-      '@ocelescope/api-base': ^0.11.0
-      '@ocelescope/api-client': ^0.11.0
-      '@ocelescope/resources': ^0.11.0
+      '@ocelescope/api-base': ^0.12.0
+      '@ocelescope/api-client': ^0.12.0
+      '@ocelescope/resources': ^0.12.0
       '@r4pm/components': ^0.4.0
       '@tanstack/react-query': ^5.105.0
       '@tanstack/react-query-devtools': ^5.105.0
@@ -994,31 +979,33 @@ packages:
       qs: ^6.17.0
       react: ^19.3.1
       react-dom: ^19.3.1
+      react-hook-form: ^7.91.0
       zod: ^4.6.7
       zustand: ^5.0.16
 
-  '@ocelescope/management@0.11.0':
-    resolution: {integrity: sha512-s4c46hEIK413nompYXCwd/UWb5gIN4unRd7x/f2NPvd29YiSUX0XaP7Zj8ogo4b3naFxViZshdobdsj3ZG16fw==}
+  '@ocelescope/management@0.12.0':
+    resolution: {integrity: sha512-cvKdpd8qCpd3rrqIOpLul7QX07Ua9FUSP5hWZEE5vMP8tYnKfxFo5ta/zldCkounhmbuL8y1bmxuMJxZFyn+0g==}
     peerDependencies:
       '@mantine/core': ^9.7.4
       '@mantine/hooks': ^9.7.4
       '@marko19907/string-to-color': '*'
-      '@ocelescope/api-base': ^0.11.0
-      '@ocelescope/core': ^0.11.0
-      '@ocelescope/resources': ^0.11.0
+      '@ocelescope/api-base': ^0.12.0
+      '@ocelescope/core': ^0.12.0
+      '@ocelescope/resources': ^0.12.0
       dayjs: ^1.11.23
       lucide-react: ^1.63.0
       mantine-datatable: ^9.4.0
       react: ^19.3.1
       react-dom: ^19.3.1
 
-  '@ocelescope/resources@0.11.0':
-    resolution: {integrity: sha512-VmwB15RikQekAlqgKRK9rYBAM4zs/ByhzUAxLM5Y/QNQJrvEa3oOOUFlDZ8FoplieZXOwWKXz4nK/fb1KbUlPw==}
+  '@ocelescope/resources@0.12.0':
+    resolution: {integrity: sha512-3PhgkACfiFgOyDsam28pUAIlhTzgskICITxqW7bX1fuJlc9c/n9nUFjfRkojLmVMJuwgPRU/a3mzl0Hp5JC6Bw==}
     peerDependencies:
       '@floating-ui/react': ^0.27.18
       '@hpcc-js/wasm-graphviz': ^1.30.0
       '@mantine/core': ^9.7.4
-      '@ocelescope/api-base': ^0.11.0
+      '@mantine/hooks': ^9.7.4
+      '@ocelescope/api-base': ^0.12.0
       '@r4pm/components': ^0.4.0
       '@xyflow/react': ^12.12.0
       dayjs: ^1.11.23
@@ -3898,47 +3885,47 @@ snapshots:
 
   '@babel/runtime@7.29.7': {}
 
-  '@biomejs/biome@2.6.3':
+  '@biomejs/biome@2.6.4':
     optionalDependencies:
-      '@biomejs/cli-android-arm64': 2.6.3
-      '@biomejs/cli-android-x64': 2.6.3
-      '@biomejs/cli-darwin-arm64': 2.6.3
-      '@biomejs/cli-darwin-x64': 2.6.3
-      '@biomejs/cli-linux-arm64': 2.6.3
-      '@biomejs/cli-linux-arm64-musl': 2.6.3
-      '@biomejs/cli-linux-x64': 2.6.3
-      '@biomejs/cli-linux-x64-musl': 2.6.3
-      '@biomejs/cli-win32-arm64': 2.6.3
-      '@biomejs/cli-win32-x64': 2.6.3
+      '@biomejs/cli-android-arm64': 2.6.4
+      '@biomejs/cli-android-x64': 2.6.4
+      '@biomejs/cli-darwin-arm64': 2.6.4
+      '@biomejs/cli-darwin-x64': 2.6.4
+      '@biomejs/cli-linux-arm64': 2.6.4
+      '@biomejs/cli-linux-arm64-musl': 2.6.4
+      '@biomejs/cli-linux-x64': 2.6.4
+      '@biomejs/cli-linux-x64-musl': 2.6.4
+      '@biomejs/cli-win32-arm64': 2.6.4
+      '@biomejs/cli-win32-x64': 2.6.4
 
-  '@biomejs/cli-android-arm64@2.6.3':
+  '@biomejs/cli-android-arm64@2.6.4':
     optional: true
 
-  '@biomejs/cli-android-x64@2.6.3':
+  '@biomejs/cli-android-x64@2.6.4':
     optional: true
 
-  '@biomejs/cli-darwin-arm64@2.6.3':
+  '@biomejs/cli-darwin-arm64@2.6.4':
     optional: true
 
-  '@biomejs/cli-darwin-x64@2.6.3':
+  '@biomejs/cli-darwin-x64@2.6.4':
     optional: true
 
-  '@biomejs/cli-linux-arm64-musl@2.6.3':
+  '@biomejs/cli-linux-arm64-musl@2.6.4':
     optional: true
 
-  '@biomejs/cli-linux-arm64@2.6.3':
+  '@biomejs/cli-linux-arm64@2.6.4':
     optional: true
 
-  '@biomejs/cli-linux-x64-musl@2.6.3':
+  '@biomejs/cli-linux-x64-musl@2.6.4':
     optional: true
 
-  '@biomejs/cli-linux-x64@2.6.3':
+  '@biomejs/cli-linux-x64@2.6.4':
     optional: true
 
-  '@biomejs/cli-win32-arm64@2.6.3':
+  '@biomejs/cli-win32-arm64@2.6.4':
     optional: true
 
-  '@biomejs/cli-win32-x64@2.6.3':
+  '@biomejs/cli-win32-x64@2.6.4':
     optional: true
 
   '@choojs/findup@0.2.1':
@@ -4329,15 +4316,15 @@ snapshots:
   '@next/swc-win32-x64-msvc@16.4.3':
     optional: true
 
-  '@ocelescope/api-base@0.11.0(@ocelescope/api-client@0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@ocelescope/api-base@0.12.0(@ocelescope/api-client@0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
-      '@ocelescope/api-client': 0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
+      '@ocelescope/api-client': 0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
       '@tanstack/react-query': 5.105.0(@types/react@19.3.0)(react@19.3.1)
       axios: 1.21.0(debug@4.4.3)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  '@ocelescope/api-client@0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))':
+  '@ocelescope/api-client@0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))':
     dependencies:
       axios: 1.21.0(debug@4.4.3)
       react: 19.3.1
@@ -4345,7 +4332,7 @@ snapshots:
       zod: 4.6.7
       zustand: 5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
 
-  '@ocelescope/api-config@0.11.0(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)(zod@4.6.7)':
+  '@ocelescope/api-config@0.12.0(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(typescript@6.0.3)(zod@4.6.7)':
     dependencies:
       orval: 8.45.0(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(typescript@6.0.3)(zod@4.6.7)
       react: 19.3.1
@@ -4368,16 +4355,19 @@ snapshots:
       - typescript
       - zod
 
-  '@ocelescope/core@0.11.0(665a283ec5fd7c20605030b14f3f18e3)':
+  '@ocelescope/core@0.12.0(f925c5c67c35ca5ea4d3a6b1a9acc4b4)':
     dependencies:
+      '@dnd-kit/core': 6.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@dnd-kit/sortable': 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)
+      '@dnd-kit/utilities': 3.2.2(react@19.3.1)
       '@mantine/core': 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/dropzone': 9.7.4(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/hooks': 9.7.4(react@19.3.1)
       '@mantine/notifications': 9.7.4(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@marko19907/string-to-color': 1.0.2
-      '@ocelescope/api-base': 0.11.0(@ocelescope/api-client@0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@ocelescope/api-client': 0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
-      '@ocelescope/resources': 0.11.0(8f74cc4c00a6008cd2fcaf9063e6b4e9)
+      '@ocelescope/api-base': 0.12.0(@ocelescope/api-client@0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@ocelescope/api-client': 0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1)))
+      '@ocelescope/resources': 0.12.0(3cbe1f6a468eae40d60c2d8f5eaffa32)
       '@r4pm/components': 0.4.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(plotly.js@4.1.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tanstack/react-query': 5.105.0(@types/react@19.3.0)(react@19.3.1)
       '@tanstack/react-query-devtools': 5.105.0(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(@types/react@19.3.0)(csstype@3.2.3)(react@19.3.1)
@@ -4391,29 +4381,31 @@ snapshots:
       qs: 6.17.0
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
+      react-hook-form: 7.91.0(@types/react@19.3.0)(react@19.3.1)
       zod: 4.6.7
       zustand: 5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))
 
-  '@ocelescope/management@0.11.0(d82f76345aa9ce7280c9bed7838c5486)':
+  '@ocelescope/management@0.12.0(aa446b9098a737efdd70d3821114d1c7)':
     dependencies:
       '@mantine/core': 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@mantine/hooks': 9.7.4(react@19.3.1)
       '@marko19907/string-to-color': 1.0.2
-      '@ocelescope/api-base': 0.11.0(@ocelescope/api-client@0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@ocelescope/core': 0.11.0(665a283ec5fd7c20605030b14f3f18e3)
-      '@ocelescope/resources': 0.11.0(8f74cc4c00a6008cd2fcaf9063e6b4e9)
+      '@ocelescope/api-base': 0.12.0(@ocelescope/api-client@0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@ocelescope/core': 0.12.0(f925c5c67c35ca5ea4d3a6b1a9acc4b4)
+      '@ocelescope/resources': 0.12.0(3cbe1f6a468eae40d60c2d8f5eaffa32)
       dayjs: 1.11.23
       lucide-react: 1.63.0(@types/react@19.3.0)(react@19.3.1)
       mantine-datatable: 9.4.0(@mantine/core@9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(@mantine/hooks@9.7.4(react@19.3.1))(clsx@2.1.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 
-  '@ocelescope/resources@0.11.0(8f74cc4c00a6008cd2fcaf9063e6b4e9)':
+  '@ocelescope/resources@0.12.0(3cbe1f6a468eae40d60c2d8f5eaffa32)':
     dependencies:
       '@floating-ui/react': 0.27.20(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@hpcc-js/wasm-graphviz': 1.30.0
       '@mantine/core': 9.7.4(@mantine/hooks@9.7.4(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@ocelescope/api-base': 0.11.0(@ocelescope/api-client@0.11.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@mantine/hooks': 9.7.4(react@19.3.1)
+      '@ocelescope/api-base': 0.12.0(@ocelescope/api-client@0.12.0(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(zod@4.6.7)(zustand@5.0.16(@types/react@19.3.0)(react@19.3.1)(use-sync-external-store@1.7.0(react@19.3.1))))(@tanstack/react-query@5.105.0(@types/react@19.3.0)(react@19.3.1))(axios@1.21.0(debug@4.4.3))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@r4pm/components': 0.4.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(plotly.js@4.1.1)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@xyflow/react': 12.12.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       dayjs: 1.11.23

@@ -1250,7 +1250,7 @@ wheels = [
 
 [[package]]
 name = "ocelescope"
-version = "0.11.0"
+version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "duckdb" },
@@ -1267,9 +1267,8 @@ dependencies = [
     { name = "pydantic" },
     { name = "r4pm-full", extra = ["polars"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/64/da/4a427d1b0ff1e78a5d09bc3c9280588db454df58eb3b8f03ca19807bd500/ocelescope-0.11.0.tar.gz", hash = "sha256:b91f46cc6ad43eff53eb0b3bbe80af0422405a899b49a4c111757ac21f4e6754", size = 86646, upload-time = "2026-10-29T12:27:06.941Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/26/d2/fc516ba6ff6a0a96aac65bcb25762ca4f5d9f05592d04d366762381bb9b8/ocelescope-0.11.0-py3-none-any.whl", hash = "sha256:0d673cc0aec772c541ec7225ad228a1f68fc93a755bdf7bf14ea72c1b570e9b0", size = 120104, upload-time = "2026-10-29T12:27:03.28Z" },
+    { url = "https://files.pythonhosted.org/packages/50/12/335756321202f124743e9992b22e0dae99688a64fbd7d6f5f476c7d90ec7/ocelescope-0.12.0-py3-none-any.whl", hash = "sha256:4b7dac5365f1c46182b033ae862bb13b8f27401963b3c7712f7e2e75696eb9b2", size = 122636, upload-time = "2026-11-05T10:19:18.497Z" },
 ]
 
 [package.optional-dependencies]
@@ -1284,7 +1283,7 @@ plugin = [
 
 [[package]]
 name = "ocelescope-backend"
-version = "0.11.0"
+version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
@@ -1298,9 +1297,8 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a2/3d/16cbd1c937c031260a4f1a874ada373c26bf104e2f669f6a7991d8bbe9d9/ocelescope_backend-0.11.0.tar.gz", hash = "sha256:0ddf2565b6bd161fc40333be6a586596ceab44a7314ae3f50e0c8c92a6068cb5", size = 34948, upload-time = "2026-10-29T12:27:07.838Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3f/1b/874dad45e536300be3c1eca8361cb5261a70d778d5b4ffba862a9081c112/ocelescope_backend-0.11.0-py3-none-any.whl", hash = "sha256:19287606d876867ca907c83a531b7582a241fbc1834957e3d30f72b27dd54f66", size = 52758, upload-time = "2026-10-29T12:27:04.324Z" },
+    { url = "https://files.pythonhosted.org/packages/49/c3/d00b20ca965ce25a3f4ae589e41a70e17b2e5fdc67e8def14a78b8523009/ocelescope_backend-0.12.0-py3-none-any.whl", hash = "sha256:de820ceba913a8d0d3c3260f0875709bc6acf6d87b5332544b9e429a4873afa4", size = 40795, upload-time = "2026-11-05T10:19:19.754Z" },
 ]
 
 [[package]]
@@ -1321,8 +1319,8 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "ocelescope-backend", specifier = ">=0.11.0" },
-    { name = "ocelescope-module-ocel", specifier = ">=0.11.0" },
+    { name = "ocelescope-backend", specifier = ">=0.12.0" },
+    { name = "ocelescope-module-ocel", specifier = ">=0.12.0" },
     { name = "ocelescope-module-ocel-editor", editable = "backend-modules/ocel-editor" },
 ]
 
@@ -1334,7 +1332,7 @@ dev = [
 
 [[package]]
 name = "ocelescope-module-ocel"
-version = "0.11.0"
+version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi" },
@@ -1345,9 +1343,8 @@ dependencies = [
     { name = "polars" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/51/af/a676462bd6ce381c1df22a6fd4075cee25193ecfd8d2deeadce772638a92/ocelescope_module_ocel-0.11.0.tar.gz", hash = "sha256:cfa1e05ab158c27bf96804ccd7cef663903699903ee9ed8b3e4ae14b44fc07ea", size = 19200, upload-time = "2026-10-29T12:27:09.185Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/30/1d/7b82a0eb9b5f3c0c3a3fe04a3bcf3fab0d9133b149483d7133c55462db23/ocelescope_module_ocel-0.11.0-py3-none-any.whl", hash = "sha256:42df2f61aa1cd6734e76c46ffb97bb462adcdea7c79183aaeb6c39c893b77067", size = 28508, upload-time = "2026-10-29T12:27:06.079Z" },
+    { url = "https://files.pythonhosted.org/packages/e7/72/4305e68243280758ad720be77a4485093bb4fee28147368f8ac0928df153/ocelescope_module_ocel-0.12.0-py3-none-any.whl", hash = "sha256:6be5eb7a86474bb75dae61febac43f2388101e3fcf31af8650b2c6c5795f2db7", size = 29572, upload-time = "2026-11-05T10:19:21.788Z" },
 ]
 
 [[package]]
@@ -1359,7 +1356,7 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "ocelescope-backend", specifier = ">=0.11.0" }]
+requires-dist = [{ name = "ocelescope-backend", specifier = ">=0.12.0" }]
 
 [[package]]
 name = "orjson"
